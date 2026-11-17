@@ -1,47 +1,113 @@
 import SwiftUI
 
-struct PhonePreview: View {
-    let device: ReviewDevice
-    let palette: WorkbenchPalette
+enum PreviewPlacement {
+    case hidden
+    case trailing(width: CGFloat)
+    case centered(width: CGFloat)
 
-    private let panelHeaderHeight: CGFloat = 56
-    private let bezel: CGFloat = 4
+    static let edgeInset: CGFloat = 16
+
+    init(viewport: CGSize, visible: Bool, flow: Bool) {
+        guard visible else {
+            self = .hidden
+            return
+        }
+
+        let threshold: CGFloat = flow ? 720 : 500
+        if viewport.width < threshold {
+            self = .centered(width: 232)
+        } else {
+            self = .trailing(width: min(232, max(196, viewport.width * 0.24)))
+        }
+    }
+
+    var width: CGFloat? {
+        switch self {
+        case .hidden: nil
+        case .trailing(let width), .centered(let width): width
+        }
+    }
+
+    var canvasClearance: CGFloat {
+        guard case let .trailing(width) = self else { return 0 }
+        return width + Self.edgeInset * 2
+    }
+
+    var isCentered: Bool {
+        if case .centered = self { return true }
+        return false
+    }
+}
+
+struct PhonePreview: View {
+    let state: ReviewState
+    let device: ReviewDevice
+    let arrangement: ReviewArrangement
+    let width: CGFloat
+    let availableHeight: CGFloat
+    let palette: WorkbenchPalette
+    let close: () -> Void
+
+    private static let headerHeight: CGFloat = 32
+    private static let bezel: CGFloat = 3
+    private static let phoneTopPadding: CGFloat = 8
+    private static let phoneBottomPadding: CGFloat = 10
+
+    static let screenTop = headerHeight + phoneTopPadding + bezel
 
     var body: some View {
+        let verticalInsets = Self.screenTop + Self.bezel + Self.phoneBottomPadding
+        let scale = max(0.1, min(
+            (width - 24 - Self.bezel * 2) / device.size.width,
+            (availableHeight - verticalInsets) / device.size.height
+        ))
+
         VStack(spacing: 0) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack {
                 Text("iPhone 预览")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold))
                     .accessibilityAddTraits(.isHeader)
-                Spacer()
-                Text("设计稿")
-                    .font(.system(size: 12))
-                    .foregroundStyle(palette.muted)
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
-            .frame(height: panelHeaderHeight, alignment: .top)
-
-            GeometryReader { geometry in
-                let top = CanvasLayout.boardTop - panelHeaderHeight - bezel
-                let scale = min(
-                    (geometry.size.width - 40 - bezel * 2) / device.size.width,
-                    (geometry.size.height - top - 24 - bezel * 2) / device.size.height
-                )
-
-                DevicePage(size: device.size, scale: max(0.1, scale)) {
-                    IOSArtboard { ContactDetailSample(palette: $0) }
+                Spacer(minLength: 0)
+                Button(action: close) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 10, weight: .semibold))
+                        .frame(width: 24, height: 24)
+                        .contentShape(Rectangle())
                 }
-                .clipShape(.rect(cornerRadius: 24))
-                .padding(bezel)
-                .background(Color(workbenchHex: 0x242B36), in: .rect(cornerRadius: 28))
-                .shadow(color: .black.opacity(0.10), radius: 8, y: 4)
-                .frame(maxWidth: .infinity)
-                .padding(.top, top)
-                .accessibilityElement(children: .contain)
-                .accessibilityLabel("iPhone 上的联系人详情设计稿")
+                .buttonStyle(.borderless)
+                .foregroundStyle(palette.secondary)
+                .accessibilityLabel("关闭 iPhone 预览")
+                .help("关闭预览")
             }
+            .padding(.leading, 10)
+            .padding(.trailing, 4)
+            .frame(height: Self.headerHeight)
+            .overlay(alignment: .bottom) { palette.groupSeam.frame(height: 1) }
+
+            DevicePage(size: device.size, scale: scale) {
+                IOSArtboard { phonePalette in
+                    switch state {
+                    case .blank: Color.clear
+                    case .selection: SettingsSample(palette: phonePalette, arrangement: arrangement)
+                    case .flow: ContactDetailSample(palette: phonePalette)
+                    }
+                }
+            }
+            .clipShape(.rect(cornerRadius: 20))
+            .padding(Self.bezel)
+            .background(Color(workbenchHex: 0x28282C), in: .rect(cornerRadius: 23))
+            .padding(.top, Self.phoneTopPadding)
+            .padding(.bottom, Self.phoneBottomPadding)
         }
-        .background(palette.surface)
+        .frame(width: width)
+        .background(palette.panel, in: .rect(cornerRadius: 10))
+        .overlay {
+            RoundedRectangle(cornerRadius: 10)
+                .strokeBorder(palette.fieldSeam, lineWidth: 0.5)
+                .allowsHitTesting(false)
+        }
+        .shadow(color: .black.opacity(0.18), radius: 14, y: 5)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("iPhone 画板预览")
     }
 }

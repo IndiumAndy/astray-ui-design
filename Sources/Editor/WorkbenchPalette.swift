@@ -9,21 +9,36 @@ struct WorkbenchPalette {
         highContrast = contrast == .increased
     }
 
-    var surface: Color { color(0xFFFFFF, 0x232830) }
-    var canvas: Color { color(0xF6F8FB, 0x171B21) }
-    var ruler: Color { color(0xEDF1F5, 0x20262E) }
-    var recessed: Color { color(0xF0F3F6, 0x2A3039) }
-    var ink: Color { color(0x192432, 0xF0F3F8) }
-    var secondary: Color { color(0x465669, 0xC2CCD9) }
-    var muted: Color { color(0x566779, 0xA8B6C8) }
-    var accent: Color { color(0x1258C9, 0x8AB7FF) }
-    var tint: Color { color(0xEAF2FF, 0x263A58) }
-    var seam: Color { ink.opacity(highContrast ? 0.30 : 0.12) }
-    var grid: Color { color(0xDFE6EE, 0x252C36) }
-    var majorGrid: Color { color(0xD3DDE9, 0x323B47) }
+    var panel: Color { color(0xF5F5F7, 0x252527) }
+    var sidebarTint: Color { panel.opacity(0.82) }
+    var canvas: Color { color(0xE5E5EA, 0x1D1D22) }
+    var ruler: Color { panel.opacity(0.90) }
+    var field: Color { color(0xFFFFFF, 0x303035) }
+    var ink: Color { color(0x1D1D1F, 0xF5F5F7) }
+    var secondary: Color { color(0x515154, 0xCACAD0) }
+    var propertyLabel: Color { color(0x3A3A3C, 0xD5D5DB) }
+    var muted: Color { color(highContrast ? 0x59595E : 0x8E8E93, 0xAAAAB0) }
+    var measure: Color { color(0x6D6D72, 0xB5B5BC) }
+    var accent: Color { color(highContrast ? 0x005BBE : 0x007AFF, 0x72B7FF) }
+    var selection: Color { Color(workbenchHex: highContrast ? 0x005BBE : 0x007AFF) }
+    var focusHalo: Color { accent.opacity(highContrast ? 0.72 : 0.35) }
+    var searchFill: Color { wash(0.05, 0.09) }
+    var hover: Color { wash(0.05, 0.08) }
+    var rowHover: Color { wash(0.04, 0.07) }
+    var active: Color { wash(0.09, 0.13) }
+    var seam: Color { wash(highContrast ? 0.28 : 0.10, 0.14) }
+    var groupSeam: Color { wash(highContrast ? 0.24 : 0.07, 0.12) }
+    var fieldSeam: Color { wash(highContrast ? 0.30 : 0.14, 0.22) }
+    var artboardSeam: Color { wash(0.08, 0.13) }
+    var grid: Color { wash(0.02, 0.045) }
+    var majorGrid: Color { wash(0.045, 0.09) }
 
     private func color(_ light: UInt32, _ dark: UInt32) -> Color {
         Color(workbenchHex: self.dark ? dark : light)
+    }
+
+    private func wash(_ light: Double, _ dark: Double) -> Color {
+        self.dark ? .white.opacity(dark) : .black.opacity(light)
     }
 }
 
@@ -35,27 +50,5 @@ extension Color {
             green: Double((hex >> 8) & 0xFF) / 255,
             blue: Double(hex & 0xFF) / 255
         )
-    }
-}
-
-extension View {
-    func workbenchSurface(_ palette: WorkbenchPalette, radius: CGFloat = 8) -> some View {
-        background(palette.surface, in: .rect(cornerRadius: radius))
-            .overlay {
-                RoundedRectangle(cornerRadius: radius)
-                    .strokeBorder(palette.seam)
-                    .allowsHitTesting(false)
-            }
-    }
-}
-
-struct WorkbenchSymbol: View {
-    let name: String
-
-    var body: some View {
-        Image(systemName: name)
-            .font(.system(size: 15, weight: .regular))
-            .frame(width: 20)
-            .accessibilityHidden(true)
     }
 }

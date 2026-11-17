@@ -51,13 +51,14 @@ enum ReviewDevice: String, CaseIterable, Identifiable {
 }
 
 enum CanvasZoom: String, CaseIterable, Identifiable {
-    case fit, half, quarter
+    case fit, actual, half, quarter
 
     var id: Self { self }
 
     var title: String {
         switch self {
         case .fit: "适合窗口"
+        case .actual: "100%"
         case .half: "50%"
         case .quarter: "25%"
         }
@@ -66,27 +67,54 @@ enum CanvasZoom: String, CaseIterable, Identifiable {
     var factor: CGFloat? {
         switch self {
         case .fit: nil
+        case .actual: 1
         case .half: 0.5
         case .quarter: 0.25
         }
     }
 }
 
+enum NavigatorTab: String, CaseIterable, Identifiable {
+    case components, layers
+
+    var id: Self { self }
+    var title: String { self == .components ? "组件" : "图层" }
+}
+
+enum ReviewDirection: String, CaseIterable, Identifiable {
+    case horizontal, vertical
+
+    var id: Self { self }
+    var title: String { self == .horizontal ? "横排" : "竖排" }
+    var symbol: String { self == .horizontal ? "rectangle.split.2x1" : "rectangle.split.1x2" }
+}
+
+struct ReviewArrangement {
+    static let spacingRange = 0...32
+    var direction = ReviewDirection.horizontal
+    var spacing = 12
+}
+
 @MainActor @Observable
 final class ReviewSession {
     private(set) var state = ReviewState.blank
     private(set) var searchRequest = 0
-    private(set) var searchRevealsLibrary = false
     var device = ReviewDevice.phone
     var zoom = CanvasZoom.fit
     var libraryVisible = true
+    var navigatorTab = NavigatorTab.components
     var trailingPaneVisible = false
+    var previewVisible = false
     var snapEnabled = true
+    var arrangement = ReviewArrangement()
 
     func open(_ state: ReviewState) {
         self.state = state
         libraryVisible = true
-        trailingPaneVisible = state != .blank
+        navigatorTab = state == .selection ? .layers : .components
+        trailingPaneVisible = state == .selection
+        previewVisible = state == .flow
+        arrangement = ReviewArrangement()
     }
 
     func newDesign() {
@@ -96,8 +124,8 @@ final class ReviewSession {
     }
 
     func requestSearch() {
-        searchRevealsLibrary = !libraryVisible
         libraryVisible = true
+        navigatorTab = .components
         searchRequest += 1
     }
 }

@@ -3,116 +3,159 @@ import SwiftUI
 struct SelectionInspector: View {
     let device: ReviewDevice
     let palette: WorkbenchPalette
+    @Binding var arrangement: ReviewArrangement
+
+    private let fieldHeight: CGFloat = 22
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("检查器")
-                    .font(.system(size: 16, weight: .semibold))
-                    .accessibilityAddTraits(.isHeader)
-                    .padding(.bottom, 16)
-
-                HStack(spacing: 12) {
-                    WorkbenchSymbol(name: "square.stack")
-                        .foregroundStyle(palette.accent)
-                        .frame(width: 36, height: 36)
-                        .background(palette.tint, in: .rect(cornerRadius: 8))
-                    VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 8) {
+                    Image(systemName: "square.stack")
+                        .font(.system(size: 16))
+                        .foregroundStyle(palette.secondary)
+                        .frame(width: 18)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("消息通知")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold))
                         Text("设置项组合")
-                            .font(.system(size: 12))
-                            .foregroundStyle(palette.secondary)
+                            .font(.system(size: 11))
+                            .foregroundStyle(palette.muted)
                     }
                     Spacer()
                 }
-                .padding(.bottom, 20)
+                .padding(.vertical, 12)
 
-                Divider()
-                geometrySection
-                Divider().padding(.vertical, 16)
-
-                sectionTitle("排列")
-                    .padding(.bottom, 8)
-                property("方向", value: "横排", symbol: "rectangle.split.2x1")
-                property("间距", value: "\(Int(IOSLayout.rowSpacing)) pt")
-                Divider().padding(.vertical, 16)
-
-                sectionTitle("子控件")
-                    .padding(.bottom, 8)
-                property("图标", symbol: "bell")
-                property("消息通知", symbol: "textformat")
-                property("开关", symbol: "switch.2")
+                palette.groupSeam.frame(height: 1)
+                geometrySection.padding(.vertical, 12)
+                palette.groupSeam.frame(height: 1)
+                arrangementSection.padding(.vertical, 12)
             }
-            .padding(16)
+            .padding(.horizontal, 12)
         }
-        .background(palette.surface)
+        .scrollIndicators(.never)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("属性检查器")
     }
 
     private var geometrySection: some View {
-        let bounds = SettingsSample.selectedBounds(for: device)
-        return VStack(alignment: .leading, spacing: 8) {
+        let bounds = SettingsSample.selectedBounds(for: device, arrangement: arrangement)
+        return VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline) {
                 sectionTitle("位置与大小")
                 Spacer()
                 Text("pt")
-                    .font(.system(size: 12, design: .monospaced))
+                    .font(.system(size: 11))
                     .foregroundStyle(palette.muted)
                     .accessibilityLabel("单位，点")
             }
-            HStack(spacing: 8) {
-                metric("X", value: bounds.minX)
-                metric("Y", value: bounds.minY)
+            HStack(spacing: 6) {
+                metric("X", label: "X 坐标", value: bounds.minX)
+                metric("Y", label: "Y 坐标", value: bounds.minY)
             }
-            HStack(spacing: 8) {
-                metric("宽度", value: bounds.width)
-                metric("高度", value: bounds.height)
+            HStack(spacing: 6) {
+                metric("W", label: "宽度", value: bounds.width)
+                metric("H", label: "高度", value: bounds.height)
             }
         }
-        .padding(.top, 16)
+    }
+
+    private var arrangementSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            sectionTitle("排列")
+
+            HStack {
+                propertyLabel("方向")
+                Spacer()
+                Picker("方向", selection: $arrangement.direction) {
+                    ForEach(ReviewDirection.allCases) { direction in
+                        Label(direction.title, systemImage: direction.symbol)
+                            .labelStyle(.iconOnly)
+                            .tag(direction)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .controlSize(.small)
+                .frame(height: 22)
+                .help("排列方向")
+            }
+
+            HStack {
+                propertyLabel("间距")
+                Spacer()
+                HStack(spacing: 4) {
+                    HStack(spacing: 3) {
+                        TextField("间距", value: spacing, format: .number.grouping(.never))
+                            .textFieldStyle(.plain)
+                            .multilineTextAlignment(.trailing)
+                            .accessibilityIdentifier("inspector-spacing")
+                        Text("pt")
+                            .foregroundStyle(palette.muted)
+                            .accessibilityHidden(true)
+                    }
+                    .font(.system(size: 12))
+                    .monospacedDigit()
+                    .padding(.horizontal, 6)
+                    .frame(width: 48, height: fieldHeight)
+                    .background { fieldBackground }
+
+                    Stepper("调整间距", value: $arrangement.spacing, in: ReviewArrangement.spacingRange)
+                        .labelsHidden()
+                        .controlSize(.mini)
+                        .fixedSize()
+                        .frame(height: fieldHeight)
+                }
+            }
+        }
+    }
+
+    private var spacing: Binding<Int> {
+        Binding(
+            get: { arrangement.spacing },
+            set: { arrangement.spacing = min(max($0, ReviewArrangement.spacingRange.lowerBound), ReviewArrangement.spacingRange.upperBound) }
+        )
     }
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(.system(size: 13, weight: .semibold))
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundStyle(palette.muted)
             .accessibilityAddTraits(.isHeader)
     }
 
-    private func metric(_ title: String, value: CGFloat) -> some View {
-        HStack {
-            Text(title)
-                .foregroundStyle(palette.secondary)
-            Spacer(minLength: 4)
-            Text(Int(value).formatted(.number.grouping(.never)))
-                .font(.system(size: 13, design: .monospaced))
-        }
-        .font(.system(size: 12))
-        .padding(.horizontal, 8)
-        .frame(height: 32)
-        .background(palette.recessed, in: .rect(cornerRadius: 8))
-        .accessibilityElement(children: .combine)
+    private func propertyLabel(_ label: String) -> some View {
+        Text(label)
+            .font(.system(size: 12))
+            .foregroundStyle(palette.propertyLabel)
+            .accessibilityHidden(true)
     }
 
-    private func property(_ title: String, value: String? = nil, symbol: String? = nil) -> some View {
-        HStack(spacing: 8) {
-            if value == nil, let symbol {
-                WorkbenchSymbol(name: symbol)
-                    .foregroundStyle(palette.secondary)
-            }
-            Text(title)
-                .foregroundStyle(value == nil ? palette.ink : palette.secondary)
-            Spacer()
-            if let value {
-                if let symbol {
-                    WorkbenchSymbol(name: symbol)
-                        .foregroundStyle(palette.muted)
-                }
-                Text(value)
-                    .monospacedDigit()
-            }
+    private func metric(_ prefix: String, label: String, value: CGFloat) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(prefix)
+                .font(.system(size: 11))
+                .foregroundStyle(palette.muted)
+            Spacer(minLength: 4)
+            Text(Int(value).formatted(.number.grouping(.never)))
+                .font(.system(size: 12))
+                .monospacedDigit()
         }
-        .font(.system(size: 13))
-        .frame(height: 32)
-        .accessibilityElement(children: .combine)
+        .padding(.horizontal, 8)
+        .frame(height: fieldHeight)
+        .background { fieldBackground }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+        .accessibilityValue("\(Int(value)) 点")
+    }
+
+    private var fieldBackground: some View {
+        RoundedRectangle(cornerRadius: 5)
+            .fill(palette.field)
+            .overlay {
+                RoundedRectangle(cornerRadius: 5)
+                    .strokeBorder(palette.fieldSeam, lineWidth: 0.5)
+            }
     }
 }

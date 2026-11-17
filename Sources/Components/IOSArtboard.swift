@@ -19,6 +19,8 @@ struct IOSSamplePalette {
     var secondary: Color { color(0x5E5E69, 0xAEAEB8) }
     var separator: Color { color(0xD9D9E0, 0x34343B) }
     var accent: Color { color(0x005AC7, 0x7CB6FF) }
+    var navigationAccent: Color { color(0x007AFF, 0x72B7FF) }
+    var sectionLabel: Color { color(0x6D6D72, 0xAEAEB8) }
     var avatar: Color { color(0xDFEAFC, 0x22344D) }
     var selectedRow: Color { color(0xEAF1FD, 0x182B42) }
     var switchOn: Color { color(0x30A755, 0x32C960) }

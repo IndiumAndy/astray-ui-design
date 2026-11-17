@@ -8,6 +8,7 @@ private enum SampleShape {
 
 struct SettingsSample: View {
     let palette: IOSSamplePalette
+    let arrangement: ReviewArrangement
 
     static let headingGap: CGFloat = 12
     static let sectionHeaderHeight: CGFloat = 24
@@ -22,7 +23,7 @@ struct SettingsSample: View {
 
             sectionLabel("通知")
             VStack(spacing: 0) {
-                row("消息通知", symbol: "bell", enabled: true)
+                selectedRow
                 separator
                 row("邮件摘要", symbol: "envelope", enabled: false)
             }
@@ -42,13 +43,38 @@ struct SettingsSample: View {
         .padding(.horizontal, IOSLayout.pageInset)
     }
 
-    static func selectedBounds(for device: ReviewDevice) -> CGRect {
+    static func selectedBounds(for device: ReviewDevice, arrangement: ReviewArrangement) -> CGRect {
         CGRect(
             x: IOSLayout.pageInset,
             y: IOSLayout.statusHeight + IOSLayout.headingHeight + headingGap + sectionHeaderHeight,
             width: device.size.width - IOSLayout.pageInset * 2,
-            height: rowHeight
+            height: selectedHeight(for: arrangement)
         )
+    }
+
+    private static func selectedHeight(for arrangement: ReviewArrangement) -> CGFloat {
+        switch arrangement.direction {
+        case .horizontal: rowHeight
+        case .vertical: 90 + 2 * CGFloat(arrangement.spacing)
+        }
+    }
+
+    private var selectedRow: some View {
+        Group {
+            switch arrangement.direction {
+            case .horizontal:
+                row("消息通知", symbol: "bell", enabled: true, spacing: CGFloat(arrangement.spacing))
+            case .vertical:
+                VStack(alignment: .leading, spacing: CGFloat(arrangement.spacing)) {
+                    rowIcon("bell")
+                    Text("消息通知").font(.system(size: 17))
+                    IOSSampleSwitch(enabled: true, palette: palette)
+                }
+                .padding(.horizontal, IOSLayout.rowInset)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .frame(height: Self.selectedHeight(for: arrangement))
     }
 
     private var separator: some View {
@@ -58,16 +84,22 @@ struct SettingsSample: View {
     }
 
     private func sectionLabel(_ title: String) -> some View {
-        IOSSectionLabel(title: title, palette: palette, leadingInset: Self.textInset)
+        IOSSectionLabel(title: title, palette: palette)
             .frame(height: Self.sectionHeaderHeight, alignment: .topLeading)
     }
 
-    private func row(_ title: String, symbol: String, enabled: Bool? = nil) -> some View {
-        HStack(spacing: IOSLayout.rowSpacing) {
-            Image(systemName: symbol)
-                .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(palette.secondary)
-                .frame(width: Self.symbolWidth)
+    private func rowIcon(_ symbol: String) -> some View {
+        Image(systemName: symbol)
+            .font(.system(size: 18, weight: .medium))
+            .foregroundStyle(palette.secondary)
+            .frame(width: Self.symbolWidth)
+    }
+
+    private func row(
+        _ title: String, symbol: String, enabled: Bool? = nil, spacing: CGFloat = IOSLayout.rowSpacing
+    ) -> some View {
+        HStack(spacing: spacing) {
+            rowIcon(symbol)
             Text(title)
                 .font(.system(size: 17))
             Spacer()
@@ -171,12 +203,17 @@ struct ContactDetailSample: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Label("联系人", systemImage: "chevron.left")
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
+                        .accessibilityHidden(true)
+                    Text("联系人")
+                }
                 Spacer()
                 Text("编辑")
             }
             .font(.system(size: 17, weight: .medium))
-            .foregroundStyle(palette.accent)
+            .foregroundStyle(palette.navigationAccent)
             .frame(height: 44)
             .padding(.bottom, 24)
 
@@ -236,13 +273,12 @@ private struct IOSPageHeading: View {
 private struct IOSSectionLabel: View {
     let title: String
     let palette: IOSSamplePalette
-    var leadingInset: CGFloat = IOSLayout.rowInset
 
     var body: some View {
         Text(title)
-            .font(.system(size: 14))
-            .foregroundStyle(palette.secondary)
-            .padding(.leading, leadingInset)
+            .font(.system(size: 13))
+            .foregroundStyle(palette.sectionLabel)
+            .padding(.leading, IOSLayout.rowInset)
             .accessibilityAddTraits(.isHeader)
     }
 }

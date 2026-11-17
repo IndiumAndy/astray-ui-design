@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct CanvasLayout {
-    static let ruler: CGFloat = 32
-    static let boardTop: CGFloat = 100
-    private static let horizontalMargin: CGFloat = 48
-    private static let bottomMargin: CGFloat = 32
+    static let ruler: CGFloat = 18
+    static let boardTop: CGFloat = 72
+    private static let horizontalMargin: CGFloat = 40
+    private static let bottomMargin: CGFloat = 28
     private static let flowGap: CGFloat = 96
 
     let scale: CGFloat
@@ -12,10 +12,10 @@ struct CanvasLayout {
     let first: CGPoint
     let second: CGPoint
 
-    init(window: CGSize, device: CGSize, zoom: CanvasZoom, flow: Bool) {
+    init(window: CGSize, device: CGSize, zoom: CanvasZoom, flow: Bool, trailingClearance: CGFloat = 0) {
         let ruler = Self.ruler
         let area = CGSize(
-            width: max(1, window.width - ruler),
+            width: max(1, window.width - ruler - trailingClearance),
             height: max(1, window.height - ruler)
         )
         let gap: CGFloat = flow ? Self.flowGap : 0
@@ -23,7 +23,7 @@ struct CanvasLayout {
 
         let widthFit = (area.width - gap - Self.horizontalMargin) / (device.width * count)
         let heightFit = (window.height - Self.boardTop - Self.bottomMargin) / device.height
-        let fit = max(0.1, min(widthFit, heightFit, flow ? 0.64 : 0.76))
+        let fit = max(0.1, min(widthFit, heightFit, flow ? 0.72 : 0.76))
         scale = zoom.factor ?? fit
         board = CGSize(width: device.width * scale, height: device.height * scale)
 
@@ -34,12 +34,14 @@ struct CanvasLayout {
         second = CGPoint(x: first.x + board.width + gap, y: first.y)
     }
 
-    static func extent(for viewport: CGSize, device: CGSize, zoom: CanvasZoom, flow: Bool) -> CGSize {
+    static func extent(
+        for viewport: CGSize, device: CGSize, zoom: CanvasZoom, flow: Bool, trailingClearance: CGFloat
+    ) -> CGSize {
         guard let scale = zoom.factor else { return viewport }
         let width = device.width * scale * (flow ? 2 : 1) + (flow ? flowGap : 0)
         let height = device.height * scale
         return CGSize(
-            width: max(viewport.width, width + ruler + horizontalMargin),
+            width: max(viewport.width, width + ruler + horizontalMargin + trailingClearance),
             height: max(viewport.height, height + boardTop + bottomMargin)
         )
     }
@@ -84,13 +86,13 @@ struct CanvasRulers: View {
                 from: CGPoint(x: 0, y: inset), to: CGPoint(x: size.width, y: inset),
                 color: palette.seam, in: context
             )
-            let labelCenter: CGFloat = 12
+            let labelCenter: CGFloat = 7
             context.draw(label("pt"), at: CGPoint(x: inset / 2, y: labelCenter))
 
             for tick in horizontalTicks {
                 let major = tick.index.isMultiple(of: 4)
                 draw(
-                    from: CGPoint(x: tick.value, y: inset - (major ? 9 : 4)),
+                    from: CGPoint(x: tick.value, y: inset - (major ? 5 : 2.5)),
                     to: CGPoint(x: tick.value, y: inset), color: palette.seam, in: context
                 )
                 if major && tick.value > inset + 16 && tick.value < size.width - 16 {
@@ -100,7 +102,7 @@ struct CanvasRulers: View {
             for tick in verticalTicks {
                 let major = tick.index.isMultiple(of: 4)
                 draw(
-                    from: CGPoint(x: inset - (major ? 7 : 4), y: tick.value),
+                    from: CGPoint(x: inset - (major ? 5 : 2.5), y: tick.value),
                     to: CGPoint(x: inset, y: tick.value), color: palette.seam, in: context
                 )
                 if major && tick.value > inset + 16 && tick.value < size.height - 16 {
@@ -115,7 +117,8 @@ struct CanvasRulers: View {
 
     private func label(_ text: String) -> Text {
         Text(text)
-            .font(.system(size: 10, design: .monospaced))
+            .font(.system(size: 9))
+            .monospacedDigit()
             .foregroundStyle(palette.muted)
     }
 
@@ -132,6 +135,6 @@ struct CanvasRulers: View {
         var path = Path()
         path.move(to: from)
         path.addLine(to: to)
-        context.stroke(path, with: .color(color), lineWidth: 0.65)
+        context.stroke(path, with: .color(color), lineWidth: 1)
     }
 }

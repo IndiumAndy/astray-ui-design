@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		021D2FFF6B2E61854C508330 /* WorkbenchToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6882742466A999D374856763 /* WorkbenchToolbar.swift */; };
 		0557911B4D762852B3869A68 /* ReviewPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498C52125B2101D80478689 /* ReviewPages.swift */; };
 		4C2BB6198C46E1758480362E /* ComponentLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA42C7EA8755524A13DC6EB1 /* ComponentLibrary.swift */; };
 		4E65C622DE5AEAF852C0F4E6 /* PhonePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6F79332EE197A772F31D88 /* PhonePreview.swift */; };
@@ -17,12 +18,14 @@
 		A816B2DC225DDF59F1DD66DE /* UIDesignApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD89483383C8998DB54F68F6 /* UIDesignApp.swift */; };
 		D4AD42083E74064FDF0AC8E0 /* Workbench.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8024D068CB8B70A5AC7C2C9D /* Workbench.swift */; };
 		DA878E8AF34D0A456486F057 /* WorkbenchPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E3F1275AF5DAB53D08AAEC /* WorkbenchPalette.swift */; };
+		E48ACF711B56B5578AB878AF /* WindowControlsAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFC5013BD8D1F76394E0D30 /* WindowControlsAlignment.swift */; };
 		EDCF47FE8291068F38855013 /* SelectionInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3FA6F0AD634A3146F9AC7D /* SelectionInspector.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		181C7405581BA46D08708E5A /* ReviewSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSession.swift; sourceTree = "<group>"; };
 		2D3FA6F0AD634A3146F9AC7D /* SelectionInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionInspector.swift; sourceTree = "<group>"; };
+		6882742466A999D374856763 /* WorkbenchToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkbenchToolbar.swift; sourceTree = "<group>"; };
 		6F6F79332EE197A772F31D88 /* PhonePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhonePreview.swift; sourceTree = "<group>"; };
 		7130B621B2ED0E63A40168A4 /* UIDesign.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIDesign.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		732BA5CBF27A27E959A344D5 /* ReviewCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCanvas.swift; sourceTree = "<group>"; };
@@ -32,6 +35,7 @@
 		CD0C9A98C733447857A74265 /* CanvasRulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasRulers.swift; sourceTree = "<group>"; };
 		D498C52125B2101D80478689 /* ReviewPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPages.swift; sourceTree = "<group>"; };
 		DA42C7EA8755524A13DC6EB1 /* ComponentLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentLibrary.swift; sourceTree = "<group>"; };
+		DEFC5013BD8D1F76394E0D30 /* WindowControlsAlignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowControlsAlignment.swift; sourceTree = "<group>"; };
 		FD89483383C8998DB54F68F6 /* UIDesignApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDesignApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -40,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				FD89483383C8998DB54F68F6 /* UIDesignApp.swift */,
+				DEFC5013BD8D1F76394E0D30 /* WindowControlsAlignment.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -69,6 +74,7 @@
 				2D3FA6F0AD634A3146F9AC7D /* SelectionInspector.swift */,
 				8024D068CB8B70A5AC7C2C9D /* Workbench.swift */,
 				C9E3F1275AF5DAB53D08AAEC /* WorkbenchPalette.swift */,
+				6882742466A999D374856763 /* WorkbenchToolbar.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -177,8 +183,10 @@
 				599982F71A4EB53BD74C03F0 /* ReviewSession.swift in Sources */,
 				EDCF47FE8291068F38855013 /* SelectionInspector.swift in Sources */,
 				A816B2DC225DDF59F1DD66DE /* UIDesignApp.swift in Sources */,
+				E48ACF711B56B5578AB878AF /* WindowControlsAlignment.swift in Sources */,
 				D4AD42083E74064FDF0AC8E0 /* Workbench.swift in Sources */,
 				DA878E8AF34D0A456486F057 /* WorkbenchPalette.swift in Sources */,
+				021D2FFF6B2E61854C508330 /* WorkbenchToolbar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -4,28 +4,51 @@ struct ReviewCanvas: View {
     let state: ReviewState
     let device: ReviewDevice
     let zoom: CanvasZoom
+    let arrangement: ReviewArrangement
+    let preview: PreviewPlacement
     let palette: WorkbenchPalette
+    let dismissPreview: () -> Void
 
     var body: some View {
         GeometryReader { geometry in
             let viewport = geometry.size
             let extent = CanvasLayout.extent(
-                for: viewport, device: device.size, zoom: zoom, flow: state == .flow
+                for: viewport, device: device.size, zoom: zoom, flow: state == .flow,
+                trailingClearance: preview.canvasClearance
             )
             let layout = CanvasLayout(
-                window: extent, device: device.size, zoom: zoom, flow: state == .flow
+                window: extent, device: device.size, zoom: zoom, flow: state == .flow,
+                trailingClearance: preview.canvasClearance
             )
-            if extent == viewport {
-                contents(using: layout)
-            } else {
-                ScrollView([.horizontal, .vertical]) {
+            Group {
+                if extent == viewport {
                     contents(using: layout)
-                        .frame(width: extent.width, height: extent.height)
+                } else {
+                    ScrollView([.horizontal, .vertical]) {
+                        contents(using: layout)
+                            .frame(width: extent.width, height: extent.height)
+                    }
+                }
+            }
+            .overlay(alignment: preview.isCentered ? .center : .topTrailing) {
+                if let width = preview.width {
+                    previewWindow(width: width, viewport: viewport)
                 }
             }
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("画布")
+    }
+
+    private func previewWindow(width: CGFloat, viewport: CGSize) -> some View {
+        let top = preview.isCentered ? 0 : CanvasLayout.boardTop - PhonePreview.screenTop
+        let availableHeight = viewport.height - top - PreviewPlacement.edgeInset * 2
+        return PhonePreview(
+            state: state, device: device, arrangement: arrangement, width: width,
+            availableHeight: availableHeight, palette: palette, close: dismissPreview
+        )
+        .padding(.trailing, preview.isCentered ? 0 : PreviewPlacement.edgeInset)
+        .padding(.top, top)
     }
 
     private func contents(using layout: CanvasLayout) -> some View {
@@ -47,7 +70,7 @@ struct ReviewCanvas: View {
             case .selection:
                 board("设置", at: layout.first, layout: layout) {
                     DevicePage(size: device.size, scale: layout.scale) {
-                        IOSArtboard { SettingsSample(palette: $0) }
+                        IOSArtboard { SettingsSample(palette: $0, arrangement: arrangement) }
                     }
                     .overlay(alignment: .topLeading) {
                         selection(layout)
@@ -100,10 +123,10 @@ struct ReviewCanvas: View {
                 .frame(width: layout.board.width, height: layout.board.height)
                 .background {
                     Rectangle()
-                        .fill(palette.surface)
-                        .shadow(color: .black.opacity(0.08), radius: 8, y: 3)
+                        .fill(palette.field)
+                        .shadow(color: .black.opacity(0.08), radius: 12, y: 2)
                 }
-                .overlay { Rectangle().strokeBorder(palette.seam).allowsHitTesting(false) }
+                .overlay { Rectangle().strokeBorder(palette.artboardSeam, lineWidth: 0.5).allowsHitTesting(false) }
         }
         .position(x: origin.x + layout.board.width / 2, y: origin.y + (layout.board.height - 32) / 2)
     }
@@ -116,13 +139,14 @@ struct ReviewCanvas: View {
 
     private var boardDimensions: some View {
         Text(device.dimensions)
-            .font(.system(size: 11, design: .monospaced))
-            .foregroundStyle(palette.muted)
+            .font(.system(size: 11))
+            .monospacedDigit()
+            .foregroundStyle(palette.measure)
             .lineLimit(1)
     }
 
     private func selection(_ layout: CanvasLayout) -> some View {
-        let bounds = SettingsSample.selectedBounds(for: device)
+        let bounds = SettingsSample.selectedBounds(for: device, arrangement: arrangement)
         let outset = SelectionOutline.outset
         let width = bounds.width * layout.scale
         let height = bounds.height * layout.scale
@@ -186,7 +210,7 @@ private struct SelectionOutline: View {
                 CGPoint(x: rect.minX, y: rect.maxY), CGPoint(x: rect.maxX, y: rect.maxY)
             ] {
                 let handle = Path(CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6))
-                context.fill(handle, with: .color(palette.surface))
+                context.fill(handle, with: .color(palette.field))
                 context.stroke(handle, with: .color(palette.accent), lineWidth: 1.25)
             }
         }
@@ -203,33 +227,40 @@ private struct FlowLink: View {
             x: layout.first.x + layout.board.width - IOSLayout.pageInset * layout.scale,
             y: layout.first.y + ContactsSample.firstRowCenter * layout.scale
         )
-        let end = CGPoint(x: layout.second.x, y: start.y)
+        let end = CGPoint(x: layout.second.x, y: layout.second.y + 136 * layout.scale)
+        let control = (end.x - start.x) * 0.48
         let labelX = (layout.first.x + layout.board.width + end.x) / 2
 
         ZStack(alignment: .topLeading) {
             Canvas { context, _ in
-                var line = Path()
-                line.move(to: start)
-                line.addLine(to: end)
-                context.stroke(line, with: .color(palette.accent), style: StrokeStyle(lineWidth: 1.6))
-                let port = Path(ellipseIn: CGRect(x: start.x - 4, y: start.y - 4, width: 8, height: 8))
-                context.fill(port, with: .color(palette.surface))
-                context.stroke(port, with: .color(palette.accent), lineWidth: 1.6)
+                var curve = Path()
+                curve.move(to: start)
+                curve.addCurve(
+                    to: end,
+                    control1: CGPoint(x: start.x + control, y: start.y),
+                    control2: CGPoint(x: end.x - control, y: end.y)
+                )
+                context.stroke(curve, with: .color(palette.accent), lineWidth: 2)
+
+                let port = Path(ellipseIn: CGRect(x: start.x - 3, y: start.y - 3, width: 6, height: 6))
+                context.fill(port, with: .color(.white))
+                context.stroke(port, with: .color(palette.accent), lineWidth: 1.25)
 
                 var arrow = Path()
                 arrow.move(to: CGPoint(x: end.x - 6, y: end.y - 4))
                 arrow.addLine(to: end)
                 arrow.addLine(to: CGPoint(x: end.x - 6, y: end.y + 4))
-                context.stroke(arrow, with: .color(palette.accent), style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
+                context.stroke(arrow, with: .color(palette.accent), style: StrokeStyle(lineWidth: 2, lineCap: .round))
             }
             .accessibilityHidden(true)
             Text("点按列表行")
-                .font(.system(size: 12, weight: .medium))
+                .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(palette.accent)
                 .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(palette.surface, in: .rect(cornerRadius: 4))
-                .position(x: labelX, y: start.y - 18)
+                .padding(.vertical, 2)
+                .background(palette.field, in: .capsule)
+                .shadow(color: .black.opacity(0.12), radius: 4, y: 1)
+                .position(x: labelX, y: min(start.y, end.y) - 13)
                 .accessibilityLabel("点按列表中的联系人，打开联系人详情")
         }
         .allowsHitTesting(false)

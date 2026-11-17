@@ -1,129 +1,127 @@
+import AppKit
 import SwiftUI
 
 struct Workbench: View {
     @Environment(\.colorScheme) private var appearance
     @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     @Bindable var session: ReviewSession
-    let focusSearchOnLaunch: Bool
 
     private var palette: WorkbenchPalette { WorkbenchPalette(appearance, contrast) }
 
-    private var columns: Binding<NavigationSplitViewVisibility> {
-        Binding(
-            get: { session.libraryVisible ? .all : .detailOnly },
-            set: { session.libraryVisible = $0 != .detailOnly }
-        )
-    }
-
     var body: some View {
-        NavigationSplitView(columnVisibility: columns) {
-            ComponentLibrary(
-                palette: palette,
-                focusOnLaunch: focusSearchOnLaunch,
-                searchRequest: session.searchRequest,
-                searchRevealsLibrary: session.searchRevealsLibrary
-            )
-            .navigationSplitViewColumnWidth(min: 200, ideal: 224, max: 272)
-        } detail: {
-            ReviewCanvas(state: session.state, device: session.device, zoom: session.zoom, palette: palette)
-                .inspector(isPresented: $session.trailingPaneVisible) {
-                    trailingPane
-                        .inspectorColumnWidth(min: 256, ideal: 288, max: 352)
+        GeometryReader { window in
+            let layout = WorkbenchLayout(window: window.size, session: session)
+
+            VStack(spacing: 0) {
+                WorkbenchToolbar(session: session, layout: layout, palette: palette)
+                    .frame(height: WorkbenchLayout.toolbarHeight)
+                palette.seam.frame(height: WorkbenchLayout.separatorWidth)
+
+                HStack(spacing: 0) {
+                    if session.libraryVisible {
+                        ComponentLibrary(palette: palette, session: session)
+                            .frame(width: layout.sidebarWidth)
+                        palette.seam.frame(width: WorkbenchLayout.separatorWidth)
+                    }
+
+                    ReviewCanvas(
+                        state: session.state, device: session.device, zoom: session.zoom,
+                        arrangement: session.arrangement, preview: layout.preview, palette: palette,
+                        dismissPreview: { session.previewVisible = false }
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .layoutPriority(1)
+
+                    if session.trailingPaneVisible {
+                        palette.seam.frame(width: WorkbenchLayout.separatorWidth)
+                        inspector
+                            .frame(width: layout.inspectorWidth)
+                    }
                 }
-                .toolbar { tools }
+                .frame(maxHeight: .infinity)
+            }
+            .background(alignment: .leading) {
+                if session.libraryVisible {
+                    sidebarBackground
+                        .frame(width: layout.sidebarWidth)
+                        .frame(maxHeight: .infinity)
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
+            }
+            .background(palette.panel)
         }
-        .navigationSplitViewStyle(.balanced)
+        .foregroundStyle(palette.ink)
         .navigationTitle(session.state.documentTitle)
     }
 
-    @ToolbarContentBuilder
-    private var tools: some ToolbarContent {
-        ToolbarItem(placement: .primaryAction) {
-            Button(action: session.newDesign) {
-                Image(systemName: "plus")
-            }
-            .accessibilityLabel("新建")
-            .help("新建（⌘N）")
+    @ViewBuilder
+    private var sidebarBackground: some View {
+        if reduceTransparency {
+            palette.panel
+        } else {
+            SidebarMaterial()
+                .overlay(palette.sidebarTint)
         }
-        .unframed()
-
-        ToolbarItemGroup(placement: .primaryAction) {
-            Menu {
-                Picker("画板设备", selection: $session.device) {
-                    ForEach(ReviewDevice.allCases) { device in
-                        Text("\(device.name) · \(device.dimensions)").tag(device)
-                    }
-                }
-            } label: {
-                Image(systemName: "iphone")
-            }
-            .menuIndicator(.hidden)
-            .accessibilityLabel("画板设备")
-            .accessibilityValue(session.device.name)
-            .help("画板设备 · \(session.device.name)")
-
-            Menu {
-                Picker("缩放", selection: $session.zoom) {
-                    ForEach(CanvasZoom.allCases) { zoom in
-                        Text(zoom.title).tag(zoom)
-                    }
-                }
-            } label: {
-                Image(systemName: "plus.magnifyingglass")
-            }
-            .menuIndicator(.hidden)
-            .accessibilityLabel("画布缩放")
-            .accessibilityValue(session.zoom.title)
-            .help("画布缩放 · \(session.zoom.title)")
-
-            Button {
-                session.snapEnabled.toggle()
-            } label: {
-                Image(systemName: session.snapEnabled ? "checkmark.square" : "square.dashed")
-                    .foregroundStyle(session.snapEnabled ? palette.accent : palette.secondary)
-            }
-            .accessibilityLabel("吸附")
-            .accessibilityValue(session.snapEnabled ? "开启" : "关闭")
-            .help(session.snapEnabled ? "关闭吸附" : "打开吸附")
-        }
-        .unframed()
-
-        ToolbarItem(placement: .primaryAction) {
-            Button {
-                session.trailingPaneVisible.toggle()
-            } label: {
-                Image(systemName: "sidebar.right")
-                    .foregroundStyle(session.trailingPaneVisible ? palette.accent : palette.secondary)
-            }
-            .disabled(session.state == .blank)
-            .accessibilityLabel(session.state == .flow ? "iPhone 预览" : "检查器")
-            .accessibilityValue(session.trailingPaneVisible ? "显示" : "隐藏")
-            .help(session.trailingPaneVisible ? "隐藏右栏（⌥⌘I）" : "显示右栏（⌥⌘I）")
-        }
-        .unframed()
     }
 
     @ViewBuilder
-    private var trailingPane: some View {
-        switch session.state {
-        case .blank:
-            EmptyView()
-        case .selection:
-            SelectionInspector(device: session.device, palette: palette)
-        case .flow:
-            PhonePreview(device: session.device, palette: palette)
+    private var inspector: some View {
+        if session.state == .selection {
+            SelectionInspector(device: session.device, palette: palette, arrangement: $session.arrangement)
+        } else {
+            Text("未选择图层")
+                .font(.system(size: 12))
+                .foregroundStyle(palette.secondary)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .accessibilityLabel("属性检查器，未选择图层")
         }
     }
 }
 
-private extension ToolbarContent {
-    @ToolbarContentBuilder
-    func unframed() -> some ToolbarContent {
-        if #available(macOS 26.0, *) {
-            sharedBackgroundVisibility(.hidden)
-        } else {
-            self
-        }
+struct WorkbenchLayout {
+    static let toolbarHeight: CGFloat = 40
+    static let separatorWidth: CGFloat = 1
+    static let navigatorWidth: CGFloat = 228
+    static let propertiesWidth: CGFloat = 272
+    static let windowControlsClearance: CGFloat = 86
+    static let closedNavigatorToolbarWidth: CGFloat = 124
+    static let closedInspectorToolbarWidth: CGFloat = 44
+
+    let sidebarWidth: CGFloat
+    let inspectorWidth: CGFloat
+    let preview: PreviewPlacement
+    let canvasScale: CGFloat
+
+    @MainActor
+    init(window: CGSize, session: ReviewSession) {
+        sidebarWidth = session.libraryVisible ? Self.navigatorWidth : 0
+        inspectorWidth = session.trailingPaneVisible ? Self.propertiesWidth : 0
+        let sideSeams: CGFloat = (session.libraryVisible ? Self.separatorWidth : 0)
+            + (session.trailingPaneVisible ? Self.separatorWidth : 0)
+        let viewport = CGSize(
+            width: max(1, window.width - sidebarWidth - inspectorWidth - sideSeams),
+            height: max(1, window.height - Self.toolbarHeight - Self.separatorWidth)
+        )
+        let flow = session.state == .flow
+        preview = PreviewPlacement(viewport: viewport, visible: session.previewVisible, flow: flow)
+        canvasScale = CanvasLayout(
+            window: viewport, device: session.device.size, zoom: session.zoom,
+            flow: flow, trailingClearance: preview.canvasClearance
+        ).scale
     }
+}
+
+private struct SidebarMaterial: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let material = NSVisualEffectView()
+        material.material = .sidebar
+        material.blendingMode = .behindWindow
+        material.state = .followsWindowActiveState
+        return material
+    }
+
+    func updateNSView(_ view: NSVisualEffectView, context: Context) {}
 }

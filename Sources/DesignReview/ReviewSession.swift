@@ -76,6 +76,7 @@ enum CanvasZoom: String, CaseIterable, Identifiable {
 final class ReviewSession {
     private(set) var state = ReviewState.blank
     private(set) var searchRequest = 0
+    private(set) var searchRevealsLibrary = false
     var device = ReviewDevice.phone
     var zoom = CanvasZoom.fit
     var libraryVisible = true
@@ -95,6 +96,7 @@ final class ReviewSession {
     }
 
     func requestSearch() {
+        searchRevealsLibrary = !libraryVisible
         libraryVisible = true
         searchRequest += 1
     }

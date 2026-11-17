@@ -10,7 +10,6 @@ struct WorkbenchPalette {
     }
 
     var surface: Color { color(0xFFFFFF, 0x232830) }
-    var sidebar: Color { color(0xF3F5F7, 0x1C2128) }
     var canvas: Color { color(0xF6F8FB, 0x171B21) }
     var ruler: Color { color(0xEDF1F5, 0x20262E) }
     var recessed: Color { color(0xF0F3F6, 0x2A3039) }
@@ -18,7 +17,6 @@ struct WorkbenchPalette {
     var secondary: Color { color(0x465669, 0xC2CCD9) }
     var muted: Color { color(0x566779, 0xA8B6C8) }
     var accent: Color { color(0x1258C9, 0x8AB7FF) }
-    var accentFill: Color { color(0x1258C9, 0x2366CE) }
     var tint: Color { color(0xEAF2FF, 0x263A58) }
     var seam: Color { ink.opacity(highContrast ? 0.30 : 0.12) }
     var grid: Color { color(0xDFE6EE, 0x252C36) }

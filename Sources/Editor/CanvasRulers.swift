@@ -2,10 +2,10 @@ import SwiftUI
 
 struct CanvasLayout {
     static let ruler: CGFloat = 32
-    private static let horizontalMargin: CGFloat = 56
-    private static let verticalMargin: CGFloat = 88
-    private static let flowGap: CGFloat = 108
-    private static let flowStagger: CGFloat = 76
+    static let boardTop: CGFloat = 100
+    private static let horizontalMargin: CGFloat = 48
+    private static let bottomMargin: CGFloat = 32
+    private static let flowGap: CGFloat = 96
 
     let scale: CGFloat
     let board: CGSize
@@ -19,29 +19,28 @@ struct CanvasLayout {
             height: max(1, window.height - ruler)
         )
         let gap: CGFloat = flow ? Self.flowGap : 0
-        let stagger: CGFloat = flow ? Self.flowStagger : 0
         let count: CGFloat = flow ? 2 : 1
 
         let widthFit = (area.width - gap - Self.horizontalMargin) / (device.width * count)
-        let heightFit = (area.height - stagger - Self.verticalMargin) / device.height
-        let fit = max(0.1, min(widthFit, heightFit, flow ? 0.60 : 0.76))
+        let heightFit = (window.height - Self.boardTop - Self.bottomMargin) / device.height
+        let fit = max(0.1, min(widthFit, heightFit, flow ? 0.64 : 0.76))
         scale = zoom.factor ?? fit
         board = CGSize(width: device.width * scale, height: device.height * scale)
 
         first = CGPoint(
             x: ruler + (area.width - board.width * count - gap) / 2,
-            y: ruler + (area.height - board.height - stagger) / 2 + 12
+            y: Self.boardTop
         )
-        second = CGPoint(x: first.x + board.width + gap, y: first.y + stagger)
+        second = CGPoint(x: first.x + board.width + gap, y: first.y)
     }
 
     static func extent(for viewport: CGSize, device: CGSize, zoom: CanvasZoom, flow: Bool) -> CGSize {
         guard let scale = zoom.factor else { return viewport }
         let width = device.width * scale * (flow ? 2 : 1) + (flow ? flowGap : 0)
-        let height = device.height * scale + (flow ? flowStagger : 0)
+        let height = device.height * scale
         return CGSize(
             width: max(viewport.width, width + ruler + horizontalMargin),
-            height: max(viewport.height, height + ruler + verticalMargin)
+            height: max(viewport.height, height + boardTop + bottomMargin)
         )
     }
 }
@@ -85,7 +84,8 @@ struct CanvasRulers: View {
                 from: CGPoint(x: 0, y: inset), to: CGPoint(x: size.width, y: inset),
                 color: palette.seam, in: context
             )
-            context.draw(label("pt"), at: CGPoint(x: inset / 2, y: inset / 2))
+            let labelCenter: CGFloat = 12
+            context.draw(label("pt"), at: CGPoint(x: inset / 2, y: labelCenter))
 
             for tick in horizontalTicks {
                 let major = tick.index.isMultiple(of: 4)
@@ -93,8 +93,8 @@ struct CanvasRulers: View {
                     from: CGPoint(x: tick.value, y: inset - (major ? 9 : 4)),
                     to: CGPoint(x: tick.value, y: inset), color: palette.seam, in: context
                 )
-                if major && tick.value > inset + 8 && tick.value < size.width - 32 {
-                    context.draw(label(String(tick.index * tickUnits)), at: CGPoint(x: tick.value + 4, y: 12), anchor: .leading)
+                if major && tick.value > inset + 16 && tick.value < size.width - 16 {
+                    context.draw(label(String(tick.index * tickUnits)), at: CGPoint(x: tick.value, y: labelCenter))
                 }
             }
             for tick in verticalTicks {
@@ -103,11 +103,11 @@ struct CanvasRulers: View {
                     from: CGPoint(x: inset - (major ? 7 : 4), y: tick.value),
                     to: CGPoint(x: inset, y: tick.value), color: palette.seam, in: context
                 )
-                if major && tick.value > inset + 12 && tick.value < size.height - 12 {
+                if major && tick.value > inset + 16 && tick.value < size.height - 16 {
                     var rotated = context
-                    rotated.translateBy(x: 12, y: tick.value - 4)
+                    rotated.translateBy(x: labelCenter, y: tick.value)
                     rotated.rotate(by: .degrees(-90))
-                    rotated.draw(label(String(tick.index * tickUnits)), at: .zero, anchor: .leading)
+                    rotated.draw(label(String(tick.index * tickUnits)), at: .zero)
                 }
             }
         }

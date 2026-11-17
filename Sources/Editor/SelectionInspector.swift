@@ -35,7 +35,7 @@ struct SelectionInspector: View {
                 sectionTitle("排列")
                     .padding(.bottom, 8)
                 property("方向", value: "横排", symbol: "rectangle.split.2x1")
-                property("间距", value: "\(SettingsSample.rowSpacing) pt")
+                property("间距", value: "\(Int(IOSLayout.rowSpacing)) pt")
                 Divider().padding(.vertical, 16)
 
                 sectionTitle("子控件")
@@ -52,7 +52,7 @@ struct SelectionInspector: View {
     private var geometrySection: some View {
         let bounds = SettingsSample.selectedBounds(for: device)
         return VStack(alignment: .leading, spacing: 8) {
-            HStack {
+            HStack(alignment: .firstTextBaseline) {
                 sectionTitle("位置与大小")
                 Spacer()
                 Text("pt")

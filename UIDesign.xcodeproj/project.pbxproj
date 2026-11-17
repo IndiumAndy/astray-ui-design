@@ -13,6 +13,7 @@
 		54C969B198274390BCD07B55 /* ReviewCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732BA5CBF27A27E959A344D5 /* ReviewCanvas.swift */; };
 		599982F71A4EB53BD74C03F0 /* ReviewSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181C7405581BA46D08708E5A /* ReviewSession.swift */; };
 		6383D289831ABD2D43B8EA2E /* CanvasRulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0C9A98C733447857A74265 /* CanvasRulers.swift */; };
+		881D7B006D6CE431A95A34E5 /* IOSArtboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F31169D0A9323996A1A1F12 /* IOSArtboard.swift */; };
 		A816B2DC225DDF59F1DD66DE /* UIDesignApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD89483383C8998DB54F68F6 /* UIDesignApp.swift */; };
 		D4AD42083E74064FDF0AC8E0 /* Workbench.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8024D068CB8B70A5AC7C2C9D /* Workbench.swift */; };
 		DA878E8AF34D0A456486F057 /* WorkbenchPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E3F1275AF5DAB53D08AAEC /* WorkbenchPalette.swift */; };
@@ -25,6 +26,7 @@
 		6F6F79332EE197A772F31D88 /* PhonePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhonePreview.swift; sourceTree = "<group>"; };
 		7130B621B2ED0E63A40168A4 /* UIDesign.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIDesign.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		732BA5CBF27A27E959A344D5 /* ReviewCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCanvas.swift; sourceTree = "<group>"; };
+		7F31169D0A9323996A1A1F12 /* IOSArtboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSArtboard.swift; sourceTree = "<group>"; };
 		8024D068CB8B70A5AC7C2C9D /* Workbench.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workbench.swift; sourceTree = "<group>"; };
 		C9E3F1275AF5DAB53D08AAEC /* WorkbenchPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkbenchPalette.swift; sourceTree = "<group>"; };
 		CD0C9A98C733447857A74265 /* CanvasRulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasRulers.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 		BA7A6DAD9B9C3BB05BF7D701 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				7F31169D0A9323996A1A1F12 /* IOSArtboard.swift */,
 				D498C52125B2101D80478689 /* ReviewPages.swift */,
 			);
 			path = Components;
@@ -167,6 +170,7 @@
 			files = (
 				6383D289831ABD2D43B8EA2E /* CanvasRulers.swift in Sources */,
 				4C2BB6198C46E1758480362E /* ComponentLibrary.swift in Sources */,
+				881D7B006D6CE431A95A34E5 /* IOSArtboard.swift in Sources */,
 				4E65C622DE5AEAF852C0F4E6 /* PhonePreview.swift in Sources */,
 				54C969B198274390BCD07B55 /* ReviewCanvas.swift in Sources */,
 				0557911B4D762852B3869A68 /* ReviewPages.swift in Sources */,

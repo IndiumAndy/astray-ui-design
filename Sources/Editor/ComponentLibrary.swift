@@ -4,6 +4,7 @@ struct ComponentLibrary: View {
     let palette: WorkbenchPalette
     let focusOnLaunch: Bool
     let searchRequest: Int
+    let searchRevealsLibrary: Bool
 
     @State private var query = ""
     @FocusState private var searchFocused: Bool
@@ -39,7 +40,12 @@ struct ComponentLibrary: View {
             .workbenchSurface(palette)
             .overlay {
                 if searchFocused {
-                    RoundedRectangle(cornerRadius: 8).strokeBorder(palette.accent, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(palette.accent.opacity(0.28), lineWidth: 4)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 8)
+                                .strokeBorder(palette.accent, lineWidth: 1)
+                        }
                         .allowsHitTesting(false)
                 }
             }
@@ -64,11 +70,14 @@ struct ComponentLibrary: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(palette.sidebar)
-        .task {
-            if focusOnLaunch || searchRequest > 0 { searchFocused = true }
+        .task(id: searchRequest) {
+            guard focusOnLaunch || searchRequest > 0 else { return }
+            if searchRevealsLibrary {
+                // Give the native split view time to restore the sidebar to the focus chain.
+                do { try await Task.sleep(for: .milliseconds(300)) } catch { return }
+            }
+            searchFocused = true
         }
-        .onChange(of: searchRequest) { searchFocused = true }
     }
 
     private var matches: [LibrarySample] {

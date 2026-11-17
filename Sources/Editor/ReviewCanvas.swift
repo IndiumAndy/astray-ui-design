@@ -36,12 +36,18 @@ struct ReviewCanvas: View {
             switch state {
             case .blank:
                 board("页面 1", at: layout.first, layout: layout) {
-                    BlankArtboard(palette: palette)
+                    DevicePage(size: device.size, scale: layout.scale) {
+                        IOSArtboard { _ in Color.clear }
+                    }
+                    .overlay {
+                        BlankArtboard(palette: palette)
+                            .padding(.top, (IOSLayout.statusHeight - IOSLayout.homeHeight) * layout.scale)
+                    }
                 }
             case .selection:
                 board("设置", at: layout.first, layout: layout) {
                     DevicePage(size: device.size, scale: layout.scale) {
-                        SettingsSample(palette: palette)
+                        IOSArtboard { SettingsSample(palette: $0) }
                     }
                     .overlay(alignment: .topLeading) {
                         selection(layout)
@@ -54,13 +60,13 @@ struct ReviewCanvas: View {
             case .flow:
                 board("联系人列表", at: layout.first, layout: layout) {
                     DevicePage(size: device.size, scale: layout.scale) {
-                        ContactsSample(palette: palette)
+                        IOSArtboard { ContactsSample(palette: $0) }
                     }
                     .accessibilityHidden(true)
                 }
                 board("联系人详情", at: layout.second, layout: layout) {
                     DevicePage(size: device.size, scale: layout.scale) {
-                        ContactDetailSample(palette: palette)
+                        IOSArtboard { ContactDetailSample(palette: $0) }
                     }
                     .accessibilityHidden(true)
                 }
@@ -77,18 +83,18 @@ struct ReviewCanvas: View {
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                Text(title)
-                    .font(.system(size: 13, weight: .medium))
-                    .lineLimit(1)
-                Spacer(minLength: 4)
-                Text(device.dimensions)
-                    .font(.system(size: 11, design: .monospaced))
-                    .foregroundStyle(palette.muted)
-                    .lineLimit(1)
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    boardTitle(title).fixedSize()
+                    Spacer(minLength: 8)
+                    boardDimensions.fixedSize()
+                }
+                VStack(alignment: .leading, spacing: 0) {
+                    boardTitle(title)
+                    boardDimensions.frame(maxWidth: .infinity, alignment: .trailing)
+                }
             }
-            .frame(width: max(layout.board.width, 176), height: 32)
-            .frame(width: layout.board.width, alignment: .leading)
+            .frame(width: layout.board.width, height: 32)
 
             content()
                 .frame(width: layout.board.width, height: layout.board.height)
@@ -102,13 +108,27 @@ struct ReviewCanvas: View {
         .position(x: origin.x + layout.board.width / 2, y: origin.y + (layout.board.height - 32) / 2)
     }
 
+    private func boardTitle(_ title: String) -> some View {
+        Text(title)
+            .font(.system(size: 13, weight: .medium))
+            .lineLimit(1)
+    }
+
+    private var boardDimensions: some View {
+        Text(device.dimensions)
+            .font(.system(size: 11, design: .monospaced))
+            .foregroundStyle(palette.muted)
+            .lineLimit(1)
+    }
+
     private func selection(_ layout: CanvasLayout) -> some View {
         let bounds = SettingsSample.selectedBounds(for: device)
+        let outset = SelectionOutline.outset
         let width = bounds.width * layout.scale
         let height = bounds.height * layout.scale
         return SelectionOutline(palette: palette)
-            .frame(width: width, height: height)
-            .offset(x: bounds.minX * layout.scale, y: bounds.minY * layout.scale)
+            .frame(width: width + outset * 2, height: height + outset * 2)
+            .offset(x: bounds.minX * layout.scale - outset, y: bounds.minY * layout.scale - outset)
             .accessibilityHidden(true)
     }
 }
@@ -155,10 +175,11 @@ private struct BlankArtboard: View {
 
 private struct SelectionOutline: View {
     let palette: WorkbenchPalette
+    static let outset: CGFloat = 4
 
     var body: some View {
         Canvas { context, size in
-            let rect = CGRect(origin: .zero, size: size)
+            let rect = CGRect(origin: .zero, size: size).insetBy(dx: Self.outset, dy: Self.outset)
             context.stroke(Path(rect), with: .color(palette.accent), lineWidth: 1.5)
             for point in [
                 CGPoint(x: rect.minX, y: rect.minY), CGPoint(x: rect.maxX, y: rect.minY),
@@ -179,22 +200,18 @@ private struct FlowLink: View {
 
     var body: some View {
         let start = CGPoint(
-            x: layout.first.x + layout.board.width - ContactsSample.rowInset * layout.scale,
+            x: layout.first.x + layout.board.width - IOSLayout.pageInset * layout.scale,
             y: layout.first.y + ContactsSample.firstRowCenter * layout.scale
         )
-        let end = CGPoint(x: layout.second.x, y: layout.second.y + 88 * layout.scale)
-        let mid = CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2)
+        let end = CGPoint(x: layout.second.x, y: start.y)
+        let labelX = (layout.first.x + layout.board.width + end.x) / 2
 
         ZStack(alignment: .topLeading) {
             Canvas { context, _ in
-                var curve = Path()
-                curve.move(to: start)
-                curve.addCurve(
-                    to: end,
-                    control1: CGPoint(x: mid.x, y: start.y),
-                    control2: CGPoint(x: mid.x, y: end.y)
-                )
-                context.stroke(curve, with: .color(palette.accent), style: StrokeStyle(lineWidth: 1.6))
+                var line = Path()
+                line.move(to: start)
+                line.addLine(to: end)
+                context.stroke(line, with: .color(palette.accent), style: StrokeStyle(lineWidth: 1.6))
                 let port = Path(ellipseIn: CGRect(x: start.x - 4, y: start.y - 4, width: 8, height: 8))
                 context.fill(port, with: .color(palette.surface))
                 context.stroke(port, with: .color(palette.accent), lineWidth: 1.6)
@@ -212,7 +229,7 @@ private struct FlowLink: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(palette.surface, in: .rect(cornerRadius: 4))
-                .position(x: mid.x + 4, y: min(start.y, end.y) - 18)
+                .position(x: labelX, y: start.y - 18)
                 .accessibilityLabel("点按列表中的联系人，打开联系人详情")
         }
         .allowsHitTesting(false)

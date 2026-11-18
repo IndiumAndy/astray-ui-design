@@ -11,7 +11,8 @@ struct ComponentLibrary: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            NavigatorTabs(selection: $session.navigatorTab)
+            NavigatorTabs(selection: $session.navigatorTab, showsPages: session.editor != nil)
+                .id(session.editor != nil)
                 .frame(height: 24)
                 .padding(.horizontal, 10)
                 .padding(.top, 10)
@@ -29,6 +30,10 @@ struct ComponentLibrary: View {
                 } else {
                     LayerNavigator(state: session.state, palette: palette)
                         .padding(.top, 8)
+                }
+            case .pages:
+                if let editor = session.editor {
+                    PageNavigator(editor: editor, palette: palette)
                 }
             }
         }
@@ -106,8 +111,9 @@ struct ComponentLibrary: View {
                     .padding(.top, 14)
             } else {
                 VStack(alignment: .leading, spacing: 0) {
-                    section("基础", items: matches.filter { $0 != .setting })
-                    section("组合", items: matches.filter { $0 == .setting })
+                    ForEach(LayerKind.sections, id: \.0) { title, kinds in
+                        section(title, items: kinds.filter { matches.contains($0) })
+                    }
                 }
                 .padding(.horizontal, 8)
                 .padding(.bottom, 8)
@@ -164,12 +170,15 @@ struct ComponentLibrary: View {
 
 private struct NavigatorTabs: NSViewRepresentable {
     @Binding var selection: NavigatorTab
+    let showsPages: Bool
 
-    func makeCoordinator() -> Coordinator { Coordinator(selection: $selection) }
+    private var tabs: [NavigatorTab] { showsPages ? [.components, .layers, .pages] : [.components, .layers] }
+
+    func makeCoordinator() -> Coordinator { Coordinator(selection: $selection, tabs: tabs) }
 
     func makeNSView(context: Context) -> NSSegmentedControl {
         let control = NSSegmentedControl(
-            labels: NavigatorTab.allCases.map(\.title),
+            labels: tabs.map(\.title),
             trackingMode: .selectOne,
             target: context.coordinator,
             action: #selector(Coordinator.selectSegment(_:))
@@ -182,7 +191,7 @@ private struct NavigatorTabs: NSViewRepresentable {
 
     func updateNSView(_ control: NSSegmentedControl, context: Context) {
         context.coordinator.selection = $selection
-        control.selectedSegment = NavigatorTab.allCases.firstIndex(of: selection) ?? 0
+        control.selectedSegment = tabs.firstIndex(of: selection) ?? 0
     }
 
     func sizeThatFits(
@@ -193,18 +202,22 @@ private struct NavigatorTabs: NSViewRepresentable {
 
     @MainActor final class Coordinator: NSObject {
         var selection: Binding<NavigatorTab>
+        let tabs: [NavigatorTab]
 
-        init(selection: Binding<NavigatorTab>) { self.selection = selection }
+        init(selection: Binding<NavigatorTab>, tabs: [NavigatorTab]) {
+            self.selection = selection
+            self.tabs = tabs
+        }
 
         @objc func selectSegment(_ sender: NSSegmentedControl) {
             let index = sender.selectedSegment
-            guard NavigatorTab.allCases.indices.contains(index) else { return }
-            selection.wrappedValue = NavigatorTab.allCases[index]
+            guard tabs.indices.contains(index) else { return }
+            selection.wrappedValue = tabs[index]
         }
     }
 }
 
-private struct NavigatorRow: View {
+struct NavigatorRow: View {
     let title: String
     let symbol: String
     let selected: Bool
@@ -371,11 +384,12 @@ private struct DesignLayerBranch: View {
     let layer: DesignLayer
     let editor: DesignEditing
     let palette: WorkbenchPalette
+    var depth = 1
     @State private var expanded = true
 
     var body: some View {
         if layer.children.isEmpty {
-            row(layer, depth: 1)
+            row(layer, depth: depth)
         } else {
             HStack(spacing: 0) {
                 Button {
@@ -388,18 +402,24 @@ private struct DesignLayerBranch: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(expanded ? "折叠" : "展开")
-                row(layer, depth: 0, disclosureColumn: false)
+                row(layer, depth: depth - 1, disclosureColumn: false)
             }
             if expanded {
-                ForEach(layer.children) { row($0, depth: 2) }
+                ForEach(editor.siblings(of: layer)) { child in
+                    DesignLayerBranch(layer: child, editor: editor, palette: palette, depth: depth + 1)
+                }
             }
         }
     }
 
     private func row(_ item: DesignLayer, depth: Int, disclosureColumn: Bool = true) -> some View {
-        let selected = editor.selectedID == item.id
+        let selected = editor.selectedIDs.contains(item.id)
         return Button {
-            editor.select(item.id)
+            if NSEvent.modifierFlags.contains(.shift), depth == 1 {
+                editor.toggleSelection(item.id)
+            } else {
+                editor.select(item.id)
+            }
         } label: {
             NavigatorRow(title: item.name, symbol: item.kind.symbol, selected: selected, palette: palette,
                          depth: depth, showsDisclosureColumn: disclosureColumn)
@@ -407,5 +427,14 @@ private struct DesignLayerBranch: View {
         .buttonStyle(.plain)
         .accessibilityAddTraits(selected ? .isSelected : [])
         .accessibilityIdentifier("layer-\(item.kind.rawValue)")
+        .contextMenu {
+            if editor.page.selection(item.id)?.parent == nil {
+                Button(selected ? "取消加入选区" : "加入选区") { editor.toggleSelection(item.id) }
+            }
+            Button("复制图层") {
+                editor.select(item.id)
+                editor.duplicateSelection()
+            }
+        }
     }
 }

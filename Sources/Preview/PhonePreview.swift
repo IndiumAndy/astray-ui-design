@@ -7,17 +7,18 @@ enum PreviewPlacement {
 
     static let edgeInset: CGFloat = 16
 
-    init(viewport: CGSize, visible: Bool, flow: Bool) {
+    init(viewport: CGSize, visible: Bool, flow: Bool, live: Bool = false) {
         guard visible else {
             self = .hidden
             return
         }
 
         let threshold: CGFloat = flow ? 720 : 500
+        let width = live ? min(328, max(264, viewport.width * 0.30)) : min(232, max(196, viewport.width * 0.24))
         if viewport.width < threshold {
-            self = .centered(width: 232)
+            self = .centered(width: live ? 296 : 232)
         } else {
-            self = .trailing(width: min(232, max(196, viewport.width * 0.24)))
+            self = .trailing(width: width)
         }
     }
 

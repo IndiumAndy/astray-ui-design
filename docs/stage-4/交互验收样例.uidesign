@@ -1,0 +1,1312 @@
+{
+  "additionalPages" : [
+    {
+      "device" : "phone",
+      "id" : "120F8D10-ACAC-4158-B8C7-C37A2AC41EF4",
+      "layers" : [
+        {
+          "children" : [
+
+          ],
+          "frame" : [
+            [
+              24,
+              72
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "geometry" : {
+            "height" : "content",
+            "width" : "fill"
+          },
+          "id" : "1897505F-7AEE-4FAF-AAD3-11F887BF89B5",
+          "isOn" : false,
+          "kind" : "title",
+          "spacing" : 12,
+          "text" : "设置"
+        },
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ],
+                  "id" : "091A8D8B-2FA1-4CE9-932A-605579B539FC",
+                  "isOn" : false,
+                  "kind" : "label",
+                  "spacing" : 12,
+                  "text" : "消息通知"
+                },
+                {
+                  "behavior" : {
+                    "binding" : {
+                      "key" : "notifications",
+                      "sample" : true,
+                      "source" : "application"
+                    },
+                    "changeAction" : "setNotifications"
+                  },
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      0,
+                      0
+                    ]
+                  ],
+                  "id" : "34403C78-31EE-4D0B-80E9-F3BEB99EEBC2",
+                  "isOn" : true,
+                  "kind" : "toggle",
+                  "spacing" : 12,
+                  "text" : ""
+                }
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "width" : "fill"
+              },
+              "id" : "4536141F-5B73-479B-B14E-9713DF988684",
+              "isOn" : false,
+              "kind" : "setting",
+              "spacing" : 12,
+              "text" : ""
+            },
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      80,
+                      44
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "CD7B6D88-296C-43A5-A080-58520C110124",
+                  "isOn" : false,
+                  "kind" : "label",
+                  "spacing" : 12,
+                  "text" : "昵称"
+                },
+                {
+                  "behavior" : {
+                    "binding" : {
+                      "key" : "nickname",
+                      "sample" : "小林",
+                      "source" : "application"
+                    },
+                    "form" : "profile",
+                    "submissionKey" : "nickname"
+                  },
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      256,
+                      48
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "ABBDB479-7D96-4BAD-84AE-22DB1411BAFE",
+                  "inputType" : "text",
+                  "isOn" : false,
+                  "kind" : "input",
+                  "spacing" : 12,
+                  "text" : ""
+                }
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "arrangement" : "vertical",
+                "gap" : 4,
+                "height" : "content",
+                "width" : "fill"
+              },
+              "id" : "D3509536-4708-4304-840F-B3F4F6BD240C",
+              "isOn" : false,
+              "kind" : "labeledInput",
+              "spacing" : 12,
+              "text" : ""
+            },
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      80,
+                      44
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "1BDF084C-F9A0-49C0-B27D-81E5D515C34D",
+                  "isOn" : false,
+                  "kind" : "label",
+                  "spacing" : 12,
+                  "text" : "姓名"
+                },
+                {
+                  "behavior" : {
+                    "form" : "profile",
+                    "rules" : {
+                      "email" : false,
+                      "message" : "请输入姓名",
+                      "required" : true
+                    },
+                    "submissionKey" : "name"
+                  },
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      256,
+                      48
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "2249D786-2F1D-4AE1-BC9F-D0714089B6E2",
+                  "inputType" : "text",
+                  "isOn" : false,
+                  "kind" : "input",
+                  "spacing" : 12,
+                  "text" : ""
+                }
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "arrangement" : "vertical",
+                "gap" : 4,
+                "height" : "content",
+                "width" : "fill"
+              },
+              "id" : "4B8FFBFC-E2B2-4B4E-98E3-D7ECFBD3CE9A",
+              "isOn" : false,
+              "kind" : "labeledInput",
+              "spacing" : 12,
+              "text" : ""
+            },
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      80,
+                      44
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "56608263-7466-4175-997F-D31600B3581D",
+                  "isOn" : false,
+                  "kind" : "label",
+                  "spacing" : 12,
+                  "text" : "密码"
+                },
+                {
+                  "behavior" : {
+                    "form" : "profile",
+                    "rules" : {
+                      "email" : false,
+                      "maximum" : 20,
+                      "minimum" : 8,
+                      "required" : true
+                    },
+                    "submissionKey" : "password"
+                  },
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      256,
+                      48
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "8E51CB7E-85D5-45A2-AFB5-95A210636E79",
+                  "inputType" : "password",
+                  "isOn" : false,
+                  "kind" : "input",
+                  "spacing" : 12,
+                  "text" : ""
+                }
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "arrangement" : "vertical",
+                "gap" : 4,
+                "height" : "content",
+                "width" : "fill"
+              },
+              "id" : "9BD7C5A2-D33B-4466-BCA3-33E286C75003",
+              "isOn" : false,
+              "kind" : "labeledInput",
+              "spacing" : 12,
+              "text" : ""
+            },
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      80,
+                      44
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "1E73E346-E376-4D75-8E5D-3A7FE24A8412",
+                  "isOn" : false,
+                  "kind" : "label",
+                  "spacing" : 12,
+                  "text" : "邮箱"
+                },
+                {
+                  "behavior" : {
+                    "form" : "profile",
+                    "rules" : {
+                      "email" : true,
+                      "required" : true
+                    },
+                    "submissionKey" : "email"
+                  },
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      256,
+                      48
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "59739FDA-1E3A-424C-8A1E-C9B0CF9DD709",
+                  "inputType" : "email",
+                  "isOn" : false,
+                  "kind" : "input",
+                  "spacing" : 12,
+                  "text" : ""
+                }
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "arrangement" : "vertical",
+                "gap" : 4,
+                "height" : "content",
+                "width" : "fill"
+              },
+              "id" : "AF8DE11D-A042-44C2-B851-9FB0E19B5D9F",
+              "isOn" : false,
+              "kind" : "labeledInput",
+              "spacing" : 12,
+              "text" : ""
+            },
+            {
+              "behavior" : {
+                "action" : {
+                  "form" : "profile",
+                  "kind" : "submit",
+                  "name" : "saveProfile"
+                }
+              },
+              "children" : [
+
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "width" : "fill"
+              },
+              "id" : "F0FE68E4-4123-49FB-A578-89A8F6F70E56",
+              "isOn" : false,
+              "kind" : "button",
+              "spacing" : 12,
+              "text" : "保存资料"
+            },
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      80,
+                      44
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "9D1D3DA0-FF85-48A3-8D80-CD33F2C866D0",
+                  "isOn" : false,
+                  "kind" : "label",
+                  "spacing" : 12,
+                  "text" : "个人签名"
+                },
+                {
+                  "behavior" : {
+                    "form" : "signature",
+                    "rules" : {
+                      "email" : false,
+                      "maximum" : 80,
+                      "required" : false
+                    },
+                    "submissionKey" : "signature"
+                  },
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      256,
+                      48
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "B8E0CF82-E735-4640-AB8E-5758CD39C76C",
+                  "inputType" : "text",
+                  "isOn" : false,
+                  "kind" : "input",
+                  "spacing" : 12,
+                  "text" : ""
+                }
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "arrangement" : "vertical",
+                "gap" : 4,
+                "height" : "content",
+                "width" : "fill"
+              },
+              "id" : "C61B071A-046E-41F2-9C34-F80F50E507B4",
+              "isOn" : false,
+              "kind" : "labeledInput",
+              "spacing" : 12,
+              "text" : ""
+            },
+            {
+              "behavior" : {
+                "action" : {
+                  "form" : "signature",
+                  "kind" : "submit",
+                  "name" : "saveSignature"
+                }
+              },
+              "children" : [
+
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "width" : "fill"
+              },
+              "id" : "0466FCB7-B839-4412-B8C7-316B21FBFC3E",
+              "isOn" : false,
+              "kind" : "button",
+              "secondaryButton" : true,
+              "spacing" : 12,
+              "text" : "保存签名"
+            },
+            {
+              "behavior" : {
+                "action" : {
+                  "kind" : "named",
+                  "name" : "syncContacts"
+                }
+              },
+              "children" : [
+
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "width" : "fill"
+              },
+              "id" : "A270C9AA-F900-4E11-AF3A-3CF1F55D79A0",
+              "isOn" : false,
+              "kind" : "button",
+              "secondaryButton" : true,
+              "spacing" : 12,
+              "text" : "同步联系人"
+            },
+            {
+              "behavior" : {
+                "action" : {
+                  "kind" : "named",
+                  "name" : "deleteAccount"
+                },
+                "state" : "disabled"
+              },
+              "children" : [
+
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "width" : "fill"
+              },
+              "id" : "5151B3B9-7F9A-44F2-B657-F250E5516053",
+              "isOn" : false,
+              "kind" : "button",
+              "secondaryButton" : true,
+              "spacing" : 12,
+              "text" : "删除账户"
+            }
+          ],
+          "frame" : [
+            [
+              24,
+              124
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "geometry" : {
+            "arrangement" : "vertical",
+            "gap" : 12,
+            "height" : "content",
+            "width" : "fill"
+          },
+          "id" : "F8AA90CC-6C80-4623-B047-DFB35EB52299",
+          "isOn" : false,
+          "kind" : "layout",
+          "spacing" : 12,
+          "text" : ""
+        }
+      ],
+      "title" : "设置"
+    },
+    {
+      "device" : "phone",
+      "id" : "9509B858-7D78-486B-9164-985C90E15D87",
+      "layers" : [
+        {
+          "children" : [
+
+          ],
+          "frame" : [
+            [
+              24,
+              72
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "geometry" : {
+            "height" : "content",
+            "width" : "fill"
+          },
+          "id" : "CED89E08-1CF4-4E76-91E6-69E0AA53384D",
+          "isOn" : false,
+          "kind" : "title",
+          "spacing" : 12,
+          "text" : "关于通讯录"
+        },
+        {
+          "children" : [
+
+          ],
+          "frame" : [
+            [
+              24,
+              128
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "id" : "B81AC621-7B85-4B7C-BD7B-46D08ABB915F",
+          "isOn" : false,
+          "kind" : "label",
+          "spacing" : 12,
+          "text" : "在通讯录中查看和整理联系人。"
+        },
+        {
+          "behavior" : {
+            "action" : {
+              "kind" : "dismiss"
+            }
+          },
+          "children" : [
+
+          ],
+          "frame" : [
+            [
+              24,
+              192
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "id" : "8B6694CD-F0F7-4D84-9D10-C95C5AA9D89C",
+          "isOn" : false,
+          "kind" : "button",
+          "spacing" : 12,
+          "text" : "完成"
+        }
+      ],
+      "title" : "关于通讯录"
+    },
+    {
+      "device" : "phone",
+      "id" : "5D839D4C-2CA6-48CE-BEAE-DABF8CAF0B54",
+      "layers" : [
+        {
+          "behavior" : {
+            "binding" : {
+              "key" : "name",
+              "sample" : "林乔",
+              "source" : "record"
+            }
+          },
+          "children" : [
+
+          ],
+          "frame" : [
+            [
+              24,
+              72
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "geometry" : {
+            "height" : "content",
+            "width" : "fill"
+          },
+          "id" : "E52BAAB9-340F-4029-8277-B3557CE8B592",
+          "isOn" : false,
+          "kind" : "title",
+          "spacing" : 12,
+          "text" : "姓名"
+        },
+        {
+          "behavior" : {
+            "binding" : {
+              "key" : "phone",
+              "sample" : "202-555-0147",
+              "source" : "record"
+            }
+          },
+          "children" : [
+
+          ],
+          "frame" : [
+            [
+              24,
+              124
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "id" : "6918483B-D197-4EBA-9B5A-9BB69255C895",
+          "isOn" : false,
+          "kind" : "label",
+          "spacing" : 12,
+          "text" : "电话"
+        }
+      ],
+      "title" : "联系人详情"
+    },
+    {
+      "device" : "phone",
+      "id" : "3CF8D261-8843-4E18-A727-89DF87D4507E",
+      "layers" : [
+        {
+          "children" : [
+
+          ],
+          "frame" : [
+            [
+              24,
+              72
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "geometry" : {
+            "height" : "content",
+            "width" : "fill"
+          },
+          "id" : "35DA21C9-5062-4ACB-B4C2-F01DE0C9EB11",
+          "isOn" : false,
+          "kind" : "title",
+          "spacing" : 12,
+          "text" : "新建联系人"
+        },
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      80,
+                      44
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "A9D42B54-E1C2-4644-A9D0-B07CBEE8D93D",
+                  "isOn" : false,
+                  "kind" : "label",
+                  "spacing" : 12,
+                  "text" : "姓名"
+                },
+                {
+                  "behavior" : {
+                    "form" : "contact",
+                    "rules" : {
+                      "email" : false,
+                      "required" : true
+                    },
+                    "submissionKey" : "name"
+                  },
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      256,
+                      48
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "F830CF07-1907-4642-870E-E7C30FC3D7BC",
+                  "inputType" : "text",
+                  "isOn" : false,
+                  "kind" : "input",
+                  "spacing" : 12,
+                  "text" : ""
+                }
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "arrangement" : "vertical",
+                "gap" : 4,
+                "height" : "content",
+                "width" : "fill"
+              },
+              "id" : "B07F1008-1505-44DE-ACFE-BFD9F8151B0C",
+              "isOn" : false,
+              "kind" : "labeledInput",
+              "spacing" : 12,
+              "text" : ""
+            },
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      80,
+                      44
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "39640B2F-3CFA-4027-9C19-97733B979B36",
+                  "isOn" : false,
+                  "kind" : "label",
+                  "spacing" : 12,
+                  "text" : "电话"
+                },
+                {
+                  "behavior" : {
+                    "form" : "contact",
+                    "submissionKey" : "phone"
+                  },
+                  "children" : [
+
+                  ],
+                  "frame" : [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      256,
+                      48
+                    ]
+                  ],
+                  "geometry" : {
+                    "height" : "content",
+                    "width" : "fill"
+                  },
+                  "id" : "E4D4F85B-2880-42D2-A4BA-9714171D9384",
+                  "inputType" : "text",
+                  "isOn" : false,
+                  "kind" : "input",
+                  "spacing" : 12,
+                  "text" : ""
+                }
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "arrangement" : "vertical",
+                "gap" : 4,
+                "height" : "content",
+                "width" : "fill"
+              },
+              "id" : "523B3320-92F7-48E1-93B9-4C43BCD7B02A",
+              "isOn" : false,
+              "kind" : "labeledInput",
+              "spacing" : 12,
+              "text" : ""
+            },
+            {
+              "behavior" : {
+                "action" : {
+                  "form" : "contact",
+                  "kind" : "submit",
+                  "name" : "addContact"
+                }
+              },
+              "children" : [
+
+              ],
+              "frame" : [
+                [
+                  0,
+                  0
+                ],
+                [
+                  342,
+                  48
+                ]
+              ],
+              "geometry" : {
+                "width" : "fill"
+              },
+              "id" : "101BB92E-ADD7-4F21-A08B-56DD7124A774",
+              "isOn" : false,
+              "kind" : "button",
+              "spacing" : 12,
+              "text" : "添加"
+            }
+          ],
+          "frame" : [
+            [
+              24,
+              124
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "geometry" : {
+            "arrangement" : "vertical",
+            "gap" : 12,
+            "height" : "content",
+            "width" : "fill"
+          },
+          "id" : "B56F4116-1DF2-4FB3-A83D-4509D46A8940",
+          "isOn" : false,
+          "kind" : "layout",
+          "spacing" : 12,
+          "text" : ""
+        }
+      ],
+      "title" : "新建联系人"
+    }
+  ],
+  "page" : {
+    "device" : "phone",
+    "id" : "7CCA94C5-78F3-4AFA-B972-9E4D89C48FBA",
+    "layers" : [
+      {
+        "children" : [
+
+        ],
+        "frame" : [
+          [
+            24,
+            72
+          ],
+          [
+            342,
+            48
+          ]
+        ],
+        "geometry" : {
+          "height" : "content",
+          "width" : "fill"
+        },
+        "id" : "8DD7204E-986C-42F7-BE65-3642A0D2F54F",
+        "isOn" : false,
+        "kind" : "title",
+        "spacing" : 12,
+        "text" : "通讯录"
+      },
+      {
+        "behavior" : {
+          "action" : {
+            "kind" : "navigate",
+            "target" : "120F8D10-ACAC-4158-B8C7-C37A2AC41EF4"
+          }
+        },
+        "children" : [
+          {
+            "children" : [
+
+            ],
+            "frame" : [
+              [
+                0,
+                0
+              ],
+              [
+                80,
+                44
+              ]
+            ],
+            "geometry" : {
+              "height" : "content",
+              "width" : "fill"
+            },
+            "id" : "E7802D2B-4D9B-41DE-81A0-3FC7B99D055B",
+            "isOn" : false,
+            "kind" : "label",
+            "spacing" : 12,
+            "text" : "设置"
+          },
+          {
+            "children" : [
+
+            ],
+            "frame" : [
+              [
+                0,
+                0
+              ],
+              [
+                80,
+                44
+              ]
+            ],
+            "geometry" : {
+              "height" : "content",
+              "width" : "content"
+            },
+            "id" : "9F45207A-BF0B-4D43-AD32-99C38E3ECEA1",
+            "isOn" : false,
+            "kind" : "label",
+            "spacing" : 12,
+            "text" : "›"
+          }
+        ],
+        "frame" : [
+          [
+            24,
+            116
+          ],
+          [
+            342,
+            48
+          ]
+        ],
+        "geometry" : {
+          "arrangement" : "horizontal",
+          "gap" : 12,
+          "height" : "content",
+          "width" : "fixed"
+        },
+        "id" : "8185A768-10DF-4C57-BD08-199AA4F06C11",
+        "isOn" : false,
+        "kind" : "listRow",
+        "spacing" : 12,
+        "text" : ""
+      },
+      {
+        "behavior" : {
+          "changeAction" : "searchContacts",
+          "submissionKey" : "query"
+        },
+        "children" : [
+
+        ],
+        "frame" : [
+          [
+            24,
+            172
+          ],
+          [
+            342,
+            48
+          ]
+        ],
+        "id" : "4991D07B-E12F-4CE8-AF13-FF9436CAC888",
+        "isOn" : false,
+        "kind" : "input",
+        "spacing" : 12,
+        "text" : "搜索联系人"
+      },
+      {
+        "children" : [
+          {
+            "behavior" : {
+              "action" : {
+                "kind" : "navigate",
+                "target" : "5D839D4C-2CA6-48CE-BEAE-DABF8CAF0B54"
+              },
+              "list" : {
+                "detailKey" : "phone",
+                "emptyAction" : {
+                  "kind" : "navigate",
+                  "target" : "3CF8D261-8843-4E18-A727-89DF87D4507E"
+                },
+                "emptyButton" : "添加联系人",
+                "emptyText" : "暂无联系人",
+                "failureText" : "无法加载联系人",
+                "key" : "contacts",
+                "loadingText" : "正在加载",
+                "sample" : {
+                  "rows" : [
+                    {
+                      "fields" : {
+                        "name" : "林乔",
+                        "phone" : "202-555-0147"
+                      },
+                      "id" : "lin"
+                    },
+                    {
+                      "fields" : {
+                        "name" : "陈亦舟",
+                        "phone" : "202-555-0162"
+                      },
+                      "id" : "chen"
+                    },
+                    {
+                      "fields" : {
+                        "name" : "沈知夏",
+                        "phone" : "202-555-0183"
+                      },
+                      "id" : "shen"
+                    }
+                  ],
+                  "state" : "ready"
+                },
+                "titleKey" : "name"
+              }
+            },
+            "children" : [
+
+            ],
+            "frame" : [
+              [
+                0,
+                0
+              ],
+              [
+                342,
+                56
+              ]
+            ],
+            "geometry" : {
+              "width" : "fill"
+            },
+            "id" : "FAF4A00E-0BB5-4A04-8FA5-A7600832E2FD",
+            "isOn" : false,
+            "kind" : "contactList",
+            "spacing" : 12,
+            "text" : ""
+          },
+          {
+            "behavior" : {
+              "action" : {
+                "kind" : "sheet",
+                "target" : "9509B858-7D78-486B-9164-985C90E15D87"
+              }
+            },
+            "children" : [
+
+            ],
+            "frame" : [
+              [
+                0,
+                0
+              ],
+              [
+                342,
+                48
+              ]
+            ],
+            "geometry" : {
+              "width" : "fill"
+            },
+            "id" : "C3E031AD-057F-4F5C-B13C-638DD3754FD2",
+            "isOn" : false,
+            "kind" : "button",
+            "secondaryButton" : true,
+            "spacing" : 12,
+            "text" : "关于"
+          }
+        ],
+        "frame" : [
+          [
+            24,
+            240
+          ],
+          [
+            342,
+            48
+          ]
+        ],
+        "geometry" : {
+          "arrangement" : "vertical",
+          "gap" : 12,
+          "height" : "content",
+          "width" : "fill"
+        },
+        "id" : "CEAD35E8-E6F1-4E07-B660-4BD654F63B69",
+        "isOn" : false,
+        "kind" : "layout",
+        "spacing" : 12,
+        "text" : ""
+      }
+    ],
+    "title" : "通讯录"
+  },
+  "version" : 4
+}

@@ -85,14 +85,15 @@ final class DesignFile: ReferenceFileDocument, @unchecked Sendable {
     }
 
     static func read(_ data: Data) throws -> DesignProject {
-        let decoded: DesignProject
+        var decoded: DesignProject
         do {
             let decoder = JSONDecoder()
             let header = try decoder.decode(Header.self, from: data)
-            guard header.version == DesignProject.currentVersion else {
+            guard (1...DesignProject.currentVersion).contains(header.version) else {
                 throw DesignFileError.unsupportedVersion(header.version)
             }
             decoded = try decoder.decode(DesignProject.self, from: data)
+            try decoded.migrate()
         } catch let error as DesignFileError {
             throw error
         } catch {

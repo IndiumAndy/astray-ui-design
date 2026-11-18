@@ -14,14 +14,16 @@ struct SnappedFrame: Equatable {
 enum CanvasSnapping {
     static func place(
         _ frame: CGRect, kind: LayerKind, on page: DesignPage,
-        excluding id: UUID?, scale: CGFloat, enabled: Bool
+        excluding id: UUID?, scale: CGFloat, enabled: Bool,
+        visibleBounds: CGRect? = nil, resolvedPeers: [CGRect]? = nil
     ) -> SnappedFrame {
         let frame = page.constrain(frame, kind: kind)
         guard enabled else { return SnappedFrame(frame: frame, guides: []) }
-        let peers = page.layers.filter { $0.id != id }.map(\.frame)
+        let bounds = visibleBounds ?? page.bounds
+        let peers = (resolvedPeers ?? page.layers.filter { $0.id != id }.map(\.frame)) + (page.reference?.guides(in: page) ?? [])
         let tolerance = 6 / scale
-        let horizontal = best(.horizontal, frame: frame, bounds: page.bounds, peers: peers, tolerance: tolerance)
-        let vertical = best(.vertical, frame: frame, bounds: page.bounds, peers: peers, tolerance: tolerance)
+        let horizontal = best(.horizontal, frame: frame, bounds: bounds, peers: peers, tolerance: tolerance)
+        let vertical = best(.vertical, frame: frame, bounds: bounds, peers: peers, tolerance: tolerance)
         let placed = frame.offsetBy(dx: horizontal?.delta ?? 0, dy: vertical?.delta ?? 0)
         let guides = (horizontal?.guides(for: placed, on: .horizontal) ?? [])
             + (vertical?.guides(for: placed, on: .vertical) ?? [])

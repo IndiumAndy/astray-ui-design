@@ -1,0 +1,195 @@
+{
+  "additionalPages" : [
+    {
+      "device" : "phone",
+      "id" : "977829C4-5FB8-4416-A34E-5EB5525F0E29",
+      "layers" : [
+        {
+          "children" : [
+
+          ],
+          "field" : "name",
+          "frame" : [
+            [
+              24,
+              116
+            ],
+            [
+              342,
+              44
+            ]
+          ],
+          "id" : "DFAB2470-24ED-4AE7-A754-6AD5B3ED924E",
+          "isOn" : false,
+          "kind" : "title",
+          "spacing" : 12,
+          "text" : "姓名"
+        },
+        {
+          "children" : [
+
+          ],
+          "field" : "phone",
+          "frame" : [
+            [
+              24,
+              160
+            ],
+            [
+              342,
+              32
+            ]
+          ],
+          "id" : "81C19212-A173-4974-8861-660DA3414F88",
+          "isOn" : false,
+          "kind" : "title",
+          "spacing" : 12,
+          "text" : "电话"
+        },
+        {
+          "children" : [
+
+          ],
+          "field" : "nickname",
+          "frame" : [
+            [
+              24,
+              216
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "id" : "FA7BD5D1-D742-48F4-8CA3-907F246AF47F",
+          "isOn" : false,
+          "kind" : "input",
+          "spacing" : 12,
+          "text" : "昵称"
+        },
+        {
+          "children" : [
+
+          ],
+          "field" : "note",
+          "frame" : [
+            [
+              24,
+              272
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "id" : "3AED8357-0B8A-4C63-B142-1D06E71B1F36",
+          "isOn" : false,
+          "kind" : "input",
+          "spacing" : 12,
+          "text" : "备注"
+        },
+        {
+          "children" : [
+
+          ],
+          "frame" : [
+            [
+              24,
+              336
+            ],
+            [
+              342,
+              48
+            ]
+          ],
+          "id" : "285D4365-F174-4C2F-9A56-E37ADC501B1C",
+          "isOn" : false,
+          "kind" : "button",
+          "savesContact" : true,
+          "spacing" : 12,
+          "text" : "保存"
+        }
+      ],
+      "title" : "联系人详情"
+    }
+  ],
+  "contacts" : [
+    {
+      "id" : "lin",
+      "name" : "林乔",
+      "nickname" : "",
+      "note" : "",
+      "phone" : "202-555-0147"
+    },
+    {
+      "id" : "chen",
+      "name" : "陈亦舟",
+      "nickname" : "",
+      "note" : "",
+      "phone" : "202-555-0162"
+    },
+    {
+      "id" : "shen",
+      "name" : "沈知夏",
+      "nickname" : "",
+      "note" : "",
+      "phone" : "202-555-0183"
+    },
+    {
+      "id" : "zhou",
+      "name" : "周遥",
+      "nickname" : "",
+      "note" : "",
+      "phone" : "202-555-0116"
+    }
+  ],
+  "page" : {
+    "device" : "phone",
+    "id" : "398B5EB9-F04E-48A0-9F25-9C105D9A2E79",
+    "layers" : [
+      {
+        "children" : [
+
+        ],
+        "frame" : [
+          [
+            24,
+            88
+          ],
+          [
+            342,
+            44
+          ]
+        ],
+        "id" : "D94A0E63-85A3-43A7-9747-7AB174ED1FDA",
+        "isOn" : false,
+        "kind" : "title",
+        "spacing" : 12,
+        "text" : "联系人"
+      },
+      {
+        "children" : [
+
+        ],
+        "destination" : "977829C4-5FB8-4416-A34E-5EB5525F0E29",
+        "frame" : [
+          [
+            24,
+            140
+          ],
+          [
+            342,
+            168
+          ]
+        ],
+        "id" : "C6F0C893-AF61-4F81-A984-C3B46C3612BD",
+        "isOn" : false,
+        "kind" : "contactList",
+        "spacing" : 12,
+        "text" : ""
+      }
+    ],
+    "title" : "联系人"
+  },
+  "version" : 2
+}

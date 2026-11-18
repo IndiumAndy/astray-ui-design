@@ -14,7 +14,7 @@ struct CanvasLayout {
 
     init(window: CGSize, device: CGSize, zoom: CanvasZoom, flow: Bool,
          trailingClearance: CGFloat = 0, magnification: CGFloat? = nil, pan: CGPoint = .zero,
-         inspectorInset: CGFloat = 0) {
+         inspectorInset: CGFloat = 0, fitHeight: CGFloat? = nil) {
         let ruler = Self.ruler
         let area = CGSize(
             width: max(1, window.width - ruler - trailingClearance),
@@ -24,7 +24,7 @@ struct CanvasLayout {
         let count: CGFloat = flow ? 2 : 1
 
         let widthFit = (area.width - gap - Self.horizontalMargin) / (device.width * count)
-        let heightFit = (window.height - Self.boardTop - Self.bottomMargin) / device.height
+        let heightFit = (window.height - Self.boardTop - Self.bottomMargin) / (fitHeight ?? device.height)
         let fit = max(0.1, min(widthFit, heightFit, flow ? 0.72 : 0.76))
         scale = magnification ?? zoom.factor ?? fit
         board = CGSize(width: device.width * scale, height: device.height * scale)

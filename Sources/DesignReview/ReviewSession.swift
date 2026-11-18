@@ -1,3 +1,4 @@
+import AppKit
 import Observation
 import SwiftUI
 
@@ -32,18 +33,25 @@ enum ReviewState: String, CaseIterable, Identifiable {
 }
 
 enum ReviewDevice: String, Codable, CaseIterable, Identifiable, Sendable {
-    case phone, largePhone
+    case phone, largePhone, tablet, desktop
 
     var id: Self { self }
 
     var name: String {
-        self == .phone ? "iPhone" : "iPhone 大屏"
+        switch self {
+        case .phone: "iPhone"
+        case .largePhone: "iPhone 大屏"
+        case .tablet: "iPad"
+        case .desktop: "桌面"
+        }
     }
 
     var size: CGSize {
         switch self {
         case .phone: CGSize(width: 390, height: 844)
         case .largePhone: CGSize(width: 430, height: 932)
+        case .tablet: CGSize(width: 820, height: 1180)
+        case .desktop: CGSize(width: 1440, height: 900)
         }
     }
 
@@ -75,10 +83,16 @@ enum CanvasZoom: String, CaseIterable, Identifiable {
 }
 
 enum NavigatorTab: String, CaseIterable, Identifiable {
-    case components, layers
+    case components, layers, pages
 
     var id: Self { self }
-    var title: String { self == .components ? "组件" : "图层" }
+    var title: String {
+        switch self {
+        case .components: "组件"
+        case .layers: "图层"
+        case .pages: "页面"
+        }
+    }
 }
 
 enum ReviewDirection: String, CaseIterable, Identifiable {
@@ -98,6 +112,7 @@ struct ReviewArrangement {
 @MainActor @Observable
 final class ReviewSession {
     let design: DesignEditing?
+    let run = PreviewController()
     private(set) var state: ReviewState
     private var deviceSample = ReviewDevice.phone
     private var inspectorOverride: Bool?
@@ -158,12 +173,32 @@ final class ReviewSession {
         navigatorTab = .components
         searchRequest += 1
     }
+
+    func runPhone() {
+        guard let editor else { return }
+        run.setEntry(editor)
+        previewVisible = true
+    }
+
+    func runWeb() {
+        guard let editor else { return }
+        run.setEntry(editor)
+        Task { await run.openBrowser(editor) }
+    }
+
+    func exportProject() {
+        guard let editor else { return }
+        run.export(editor, in: NSApp.keyWindow)
+    }
 }
 
 struct CanvasZoomOptions: View {
     let session: ReviewSession
 
     var body: some View {
+        if let editor = session.editor, editor.project.pages.count > 1 {
+            Button("查看全部画板") { editor.overviewRequest += 1 }
+        }
         ForEach(CanvasZoom.allCases) { zoom in
             Button {
                 session.setZoom(zoom)

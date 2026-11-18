@@ -54,8 +54,15 @@ private struct WorkbenchDocument: View {
             .onChange(of: undoManager, initial: true) { _, manager in
                 session.design?.undoManager = manager
             }
-            .onChange(of: configuration.document.project.page) { _, page in
-                if page.selection(session.design?.selectedID) == nil { session.design?.select(nil) }
+            .alert("无法导入图片", isPresented: Binding(
+                get: { session.design?.imageIssue != nil },
+                set: { if !$0 { session.design?.imageIssue = nil } }
+            )) {} message: {
+                Text(session.design?.imageIssue ?? "")
+            }
+            .onChange(of: configuration.document.project) { _, project in
+                if let design = session.design, design.selection == nil { design.select(nil) }
+                session.run.publish(project)
             }
     }
 
@@ -71,8 +78,17 @@ private extension FocusedValues {
 
 private struct WorkbenchCommands: Commands {
     @FocusedValue(\.workbenchSession) private var session
+    @Environment(\.newDocument) private var newDocument
 
     var body: some Commands {
+        CommandGroup(after: .newItem) {
+            Button("新建联系人示例") {
+                newDocument { DesignFile(project: .contactExample()) }
+            }
+            Button("新建交互示例") {
+                newDocument { DesignFile(project: .interactionExample()) }
+            }
+        }
         CommandMenu("工作台") {
             if let session {
                 @Bindable var session = session
@@ -90,12 +106,40 @@ private struct WorkbenchCommands: Commands {
                 .keyboardShortcut("p", modifiers: [.command, .option])
                 Divider()
                 Picker("画板设备", selection: $session.device) {
-                    ForEach(ReviewDevice.allCases) { device in
+                    ForEach(session.editor == nil ? [.phone, .largePhone] : ReviewDevice.allCases) { device in
                         Text(device.name).tag(device)
                     }
                 }
+                if let editor = session.editor {
+                    Menu("画板比例") { aspectOptions(editor) }
+                    Toggle("展开整页", isOn: Binding(get: { editor.showsFullPage }, set: { editor.showsFullPage = $0 }))
+                    Toggle("仅改\(editor.page.deviceLayout.title)布局",
+                           isOn: Binding(get: { editor.usesDeviceLayout }, set: { editor.usesDeviceLayout = $0 }))
+                    Button("恢复通用布局", action: editor.restoreSharedLayout).disabled(!editor.usesDeviceLayout)
+                    Menu("参考布局") {
+                        Button("无") { editor.setReference(nil) }
+                        ForEach(ReferenceLayout.allCases) { reference in
+                            Button(reference.title) { editor.setReference(reference) }
+                        }
+                    }
+                    Button("导入对照底图…") { editor.importImage(reference: true) }
+                    Menu("排列所选图层") { arrangementCommands(editor) }
+                    Button("复制图层", action: editor.duplicateSelection)
+                        .keyboardShortcut("d")
+                        .disabled(editor.selection == nil)
+                }
                 Toggle("吸附", isOn: $session.snapEnabled)
                 Menu("缩放") { CanvasZoomOptions(session: session) }
+            }
+        }
+        CommandMenu("运行") {
+            if let session, session.editor != nil {
+                Button("在 iPhone 模拟器运行", action: session.runPhone)
+                Button("在默认浏览器运行", action: session.runWeb)
+                    .keyboardShortcut("r", modifiers: [.command, .option])
+                    .disabled(session.run.webBusy)
+                Divider()
+                Button("导出源码", action: session.exportProject)
             }
         }
         CommandMenu("设计稿") {

@@ -5,6 +5,7 @@ struct WorkbenchToolbar: View {
     let layout: WorkbenchLayout
     let palette: WorkbenchPalette
     let title: String
+    @State private var showsArtboard = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -45,6 +46,34 @@ struct WorkbenchToolbar: View {
                         active: session.previewVisible
                     ) {
                         session.previewVisible.toggle()
+                    }
+
+                    if let editor = session.editor {
+                        toolbarButton("rectangle", title: "画板设置", tooltip: "设备、参考布局与底图",
+                                      active: showsArtboard || editor.usesDeviceLayout,
+                                      value: editor.scopeTitle) { showsArtboard.toggle() }
+                            .popover(isPresented: $showsArtboard, arrowEdge: .bottom) {
+                                ArtboardControls(editor: editor, palette: palette)
+                            }
+                        Menu {
+                            Button("在 iPhone 模拟器运行", action: session.runPhone)
+                            Button("在默认浏览器运行", action: session.runWeb)
+                                .disabled(session.run.webBusy)
+                            Divider()
+                            Button("导出源码", action: session.exportProject)
+                        } label: {
+                            ToolbarFace(palette: palette) {
+                                if session.run.webBusy {
+                                    ProgressView().controlSize(.small)
+                                } else {
+                                    Image(systemName: "play").font(.system(size: 14, weight: .medium))
+                                }
+                            }
+                        }
+                        .menuStyle(.borderlessButton)
+                        .menuIndicator(.hidden)
+                        .fixedSize()
+                        .accessibilityLabel("运行与导出")
                     }
 
                     palette.groupSeam

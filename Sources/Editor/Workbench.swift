@@ -32,6 +32,7 @@ struct Workbench: View {
                             DesignCanvas(editor: editor, zoom: session.zoom, snapEnabled: session.snapEnabled,
                                          preview: layout.preview, palette: palette,
                                          inspectorInset: layout.inspectorWidth == 0 ? 0 : layout.inspectorWidth + WorkbenchLayout.separatorWidth,
+                                         run: session.run,
                                          dismissPreview: { session.previewVisible = false })
                         } else {
                             ReviewCanvas(
@@ -64,6 +65,14 @@ struct Workbench: View {
             .background(palette.panel)
         }
         .foregroundStyle(palette.ink)
+        .alert("预览或导出失败", isPresented: Binding(
+            get: { session.run.issue != nil },
+            set: { if !$0 { session.run.issue = nil } }
+        )) {
+            Button("好", role: .cancel) { session.run.issue = nil }
+        } message: {
+            Text(session.run.issue?.text ?? "")
+        }
     }
 
     @ViewBuilder
@@ -120,7 +129,7 @@ struct WorkbenchLayout {
         )
         canvasWidth = viewport.width
         let flow = session.state == .flow
-        preview = PreviewPlacement(viewport: viewport, visible: session.previewVisible, flow: flow)
+        preview = PreviewPlacement(viewport: viewport, visible: session.previewVisible, flow: flow, live: session.editor != nil)
         canvasScale = CanvasLayout(
             window: viewport, device: session.device.size, zoom: session.zoom,
             flow: flow, trailingClearance: preview.canvasClearance,

@@ -24,6 +24,7 @@ struct IOSSamplePalette {
     var avatar: Color { color(0xDFEAFC, 0x22344D) }
     var selectedRow: Color { color(0xEAF1FD, 0x182B42) }
     var switchOn: Color { color(0x30A755, 0x32C960) }
+    var error: Color { color(0xA32420, 0xFFACA8) }
 
     private func color(_ light: UInt32, _ dark: UInt32) -> Color {
         Color(workbenchHex: scheme == .dark ? dark : light)

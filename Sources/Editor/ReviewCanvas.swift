@@ -170,7 +170,7 @@ struct DevicePage<Content: View>: View {
     }
 }
 
-private struct BlankArtboard: View {
+struct BlankArtboard: View {
     let palette: WorkbenchPalette
 
     var body: some View {

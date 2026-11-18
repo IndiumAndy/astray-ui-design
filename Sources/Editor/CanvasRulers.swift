@@ -12,7 +12,9 @@ struct CanvasLayout {
     let first: CGPoint
     let second: CGPoint
 
-    init(window: CGSize, device: CGSize, zoom: CanvasZoom, flow: Bool, trailingClearance: CGFloat = 0) {
+    init(window: CGSize, device: CGSize, zoom: CanvasZoom, flow: Bool,
+         trailingClearance: CGFloat = 0, magnification: CGFloat? = nil, pan: CGPoint = .zero,
+         inspectorInset: CGFloat = 0) {
         let ruler = Self.ruler
         let area = CGSize(
             width: max(1, window.width - ruler - trailingClearance),
@@ -24,14 +26,29 @@ struct CanvasLayout {
         let widthFit = (area.width - gap - Self.horizontalMargin) / (device.width * count)
         let heightFit = (window.height - Self.boardTop - Self.bottomMargin) / device.height
         let fit = max(0.1, min(widthFit, heightFit, flow ? 0.72 : 0.76))
-        scale = zoom.factor ?? fit
+        scale = magnification ?? zoom.factor ?? fit
         board = CGSize(width: device.width * scale, height: device.height * scale)
 
+        let centered = ruler + (area.width - board.width * count - gap) / 2
+        // Opening properties after a drop keeps the artboard under the pointer.
+        let inspectorAdjustment = min(inspectorInset / 2, max(0, area.width + ruler - centered - board.width - 8))
         first = CGPoint(
-            x: ruler + (area.width - board.width * count - gap) / 2,
-            y: Self.boardTop
+            x: centered + inspectorAdjustment + pan.x,
+            y: Self.boardTop + pan.y
         )
         second = CGPoint(x: first.x + board.width + gap, y: first.y)
+    }
+
+    func documentPoint(_ point: CGPoint) -> CGPoint {
+        CGPoint(x: (point.x - first.x) / scale, y: (point.y - first.y) / scale)
+    }
+
+    func canvasPoint(_ point: CGPoint) -> CGPoint {
+        CGPoint(x: first.x + point.x * scale, y: first.y + point.y * scale)
+    }
+
+    func canvasRect(_ frame: CGRect) -> CGRect {
+        CGRect(origin: canvasPoint(frame.origin), size: CGSize(width: frame.width * scale, height: frame.height * scale))
     }
 
     static func extent(

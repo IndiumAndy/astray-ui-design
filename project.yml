@@ -10,16 +10,45 @@ targets:
     type: application
     platform: macOS
     sources: [Sources]
+    info:
+      path: Sources/App/Info.plist
+      properties:
+        CFBundleDisplayName: UI Design
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: UI Design 项目
+            CFBundleTypeRole: Editor
+            LSHandlerRank: Owner
+            LSItemContentTypes: [local.uidesign.project]
+            NSDocumentClass: NSDocument
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: local.uidesign.project
+            UTTypeDescription: UI Design 项目
+            UTTypeConformsTo: [public.json]
+            UTTypeTagSpecification:
+              public.filename-extension: [uidesign]
+          - UTTypeIdentifier: local.uidesign.component
+            UTTypeDescription: UI Design 组件
+            UTTypeConformsTo: [public.data]
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: UI Design
         PRODUCT_BUNDLE_IDENTIFIER: local.uidesign.workbench
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "-"
         ENABLE_HARDENED_RUNTIME: YES
+  UIDesignTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [Tests]
+    dependencies:
+      - target: UIDesign
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
 schemes:
   UIDesign:
     build:
@@ -27,3 +56,5 @@ schemes:
         UIDesign: all
     run:
       config: Debug
+    test:
+      targets: [UIDesignTests]

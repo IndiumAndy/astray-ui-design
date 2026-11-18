@@ -9,28 +9,60 @@
 /* Begin PBXBuildFile section */
 		021D2FFF6B2E61854C508330 /* WorkbenchToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6882742466A999D374856763 /* WorkbenchToolbar.swift */; };
 		0557911B4D762852B3869A68 /* ReviewPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D498C52125B2101D80478689 /* ReviewPages.swift */; };
+		0B28FCB03FDB6B4CF624E878 /* DesignInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3DB95F481F84ADFD0D6F43D /* DesignInspector.swift */; };
+		0C1E2AE79DF3952B8EE9CE24 /* DesignProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C159D136A424EC10B355BA18 /* DesignProjectTests.swift */; };
 		4C2BB6198C46E1758480362E /* ComponentLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA42C7EA8755524A13DC6EB1 /* ComponentLibrary.swift */; };
 		4E65C622DE5AEAF852C0F4E6 /* PhonePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6F79332EE197A772F31D88 /* PhonePreview.swift */; };
 		54C969B198274390BCD07B55 /* ReviewCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732BA5CBF27A27E959A344D5 /* ReviewCanvas.swift */; };
+		58F7032F028FA4F5980466CE /* CanvasSnapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3159A608EBF91BC61D0D3C0C /* CanvasSnapping.swift */; };
 		599982F71A4EB53BD74C03F0 /* ReviewSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181C7405581BA46D08708E5A /* ReviewSession.swift */; };
 		6383D289831ABD2D43B8EA2E /* CanvasRulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0C9A98C733447857A74265 /* CanvasRulers.swift */; };
+		6DC80A5B3300CB5B8D113DF4 /* ComponentDragSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C8CF43128307EA8002894C /* ComponentDragSource.swift */; };
 		881D7B006D6CE431A95A34E5 /* IOSArtboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F31169D0A9323996A1A1F12 /* IOSArtboard.swift */; };
+		9C0BC721D17BCE4183833B4A /* DesignLayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00936221132349A7C509D20 /* DesignLayerView.swift */; };
+		A2BA4CD826E9D94525E8FE91 /* DesignFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C96B514CA52E577B45F11F5 /* DesignFile.swift */; };
 		A816B2DC225DDF59F1DD66DE /* UIDesignApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD89483383C8998DB54F68F6 /* UIDesignApp.swift */; };
+		C57D139139470A8053DD7DD8 /* DesignProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79FCBA58E0E9E1A4CFDE8A1 /* DesignProject.swift */; };
+		D085EC78FCE9F7FAAB02DE1F /* DesignEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4FA0B8410C49EE8E692389 /* DesignEditing.swift */; };
+		D3D7E7BE0897F07EB7022FA5 /* DesignCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F894AB8303189399B8E0A3E /* DesignCanvas.swift */; };
 		D4AD42083E74064FDF0AC8E0 /* Workbench.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8024D068CB8B70A5AC7C2C9D /* Workbench.swift */; };
 		DA878E8AF34D0A456486F057 /* WorkbenchPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E3F1275AF5DAB53D08AAEC /* WorkbenchPalette.swift */; };
+		E23B2657459852E87AB03BDA /* CanvasPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B98FFC3363A8E793148D9F /* CanvasPointer.swift */; };
 		E48ACF711B56B5578AB878AF /* WindowControlsAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFC5013BD8D1F76394E0D30 /* WindowControlsAlignment.swift */; };
 		EDCF47FE8291068F38855013 /* SelectionInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3FA6F0AD634A3146F9AC7D /* SelectionInspector.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2711496EB861663AAB15F819 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9ADE3E2EDD3843A813C91143 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DF135372D9154C8E95EC8DE3;
+			remoteInfo = UIDesign;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		0C96B514CA52E577B45F11F5 /* DesignFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignFile.swift; sourceTree = "<group>"; };
 		181C7405581BA46D08708E5A /* ReviewSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSession.swift; sourceTree = "<group>"; };
+		19B98FFC3363A8E793148D9F /* CanvasPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasPointer.swift; sourceTree = "<group>"; };
 		2D3FA6F0AD634A3146F9AC7D /* SelectionInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionInspector.swift; sourceTree = "<group>"; };
+		2F894AB8303189399B8E0A3E /* DesignCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignCanvas.swift; sourceTree = "<group>"; };
+		3159A608EBF91BC61D0D3C0C /* CanvasSnapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasSnapping.swift; sourceTree = "<group>"; };
+		44C8CF43128307EA8002894C /* ComponentDragSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentDragSource.swift; sourceTree = "<group>"; };
+		520F97547373729E9941B2D5 /* UIDesignTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIDesignTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6882742466A999D374856763 /* WorkbenchToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkbenchToolbar.swift; sourceTree = "<group>"; };
 		6F6F79332EE197A772F31D88 /* PhonePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhonePreview.swift; sourceTree = "<group>"; };
 		7130B621B2ED0E63A40168A4 /* UIDesign.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIDesign.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		732BA5CBF27A27E959A344D5 /* ReviewCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCanvas.swift; sourceTree = "<group>"; };
 		7F31169D0A9323996A1A1F12 /* IOSArtboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSArtboard.swift; sourceTree = "<group>"; };
 		8024D068CB8B70A5AC7C2C9D /* Workbench.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workbench.swift; sourceTree = "<group>"; };
+		9F4FA0B8410C49EE8E692389 /* DesignEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignEditing.swift; sourceTree = "<group>"; };
+		A79FCBA58E0E9E1A4CFDE8A1 /* DesignProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignProject.swift; sourceTree = "<group>"; };
+		A9F16D6046DA14CBA2DF4278 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B00936221132349A7C509D20 /* DesignLayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignLayerView.swift; sourceTree = "<group>"; };
+		B3DB95F481F84ADFD0D6F43D /* DesignInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignInspector.swift; sourceTree = "<group>"; };
+		C159D136A424EC10B355BA18 /* DesignProjectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignProjectTests.swift; sourceTree = "<group>"; };
 		C9E3F1275AF5DAB53D08AAEC /* WorkbenchPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkbenchPalette.swift; sourceTree = "<group>"; };
 		CD0C9A98C733447857A74265 /* CanvasRulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasRulers.swift; sourceTree = "<group>"; };
 		D498C52125B2101D80478689 /* ReviewPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPages.swift; sourceTree = "<group>"; };
@@ -40,9 +72,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		013B72D08DD326B6B88AE920 /* DesignDocument */ = {
+			isa = PBXGroup;
+			children = (
+				0C96B514CA52E577B45F11F5 /* DesignFile.swift */,
+				A79FCBA58E0E9E1A4CFDE8A1 /* DesignProject.swift */,
+			);
+			path = DesignDocument;
+			sourceTree = "<group>";
+		};
 		06896B27D7965268E7F40E88 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				A9F16D6046DA14CBA2DF4278 /* Info.plist */,
 				FD89483383C8998DB54F68F6 /* UIDesignApp.swift */,
 				DEFC5013BD8D1F76394E0D30 /* WindowControlsAlignment.swift */,
 			);
@@ -57,10 +99,19 @@
 			path = DesignReview;
 			sourceTree = "<group>";
 		};
+		2296247E37F4DE9D6345196E /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				C159D136A424EC10B355BA18 /* DesignProjectTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		33CF52CD8AA35ABA3FCDDFDC = {
 			isa = PBXGroup;
 			children = (
 				E8468C3BC7747280CF454912 /* Sources */,
+				2296247E37F4DE9D6345196E /* Tests */,
 				D81E38A8638B25817A2F4C52 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,8 +119,14 @@
 		6535B9F4F7B30F202875A0E4 /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				19B98FFC3363A8E793148D9F /* CanvasPointer.swift */,
 				CD0C9A98C733447857A74265 /* CanvasRulers.swift */,
+				3159A608EBF91BC61D0D3C0C /* CanvasSnapping.swift */,
+				44C8CF43128307EA8002894C /* ComponentDragSource.swift */,
 				DA42C7EA8755524A13DC6EB1 /* ComponentLibrary.swift */,
+				2F894AB8303189399B8E0A3E /* DesignCanvas.swift */,
+				9F4FA0B8410C49EE8E692389 /* DesignEditing.swift */,
+				B3DB95F481F84ADFD0D6F43D /* DesignInspector.swift */,
 				732BA5CBF27A27E959A344D5 /* ReviewCanvas.swift */,
 				2D3FA6F0AD634A3146F9AC7D /* SelectionInspector.swift */,
 				8024D068CB8B70A5AC7C2C9D /* Workbench.swift */,
@@ -90,6 +147,7 @@
 		BA7A6DAD9B9C3BB05BF7D701 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				B00936221132349A7C509D20 /* DesignLayerView.swift */,
 				7F31169D0A9323996A1A1F12 /* IOSArtboard.swift */,
 				D498C52125B2101D80478689 /* ReviewPages.swift */,
 			);
@@ -100,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				7130B621B2ED0E63A40168A4 /* UIDesign.app */,
+				520F97547373729E9941B2D5 /* UIDesignTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -109,6 +168,7 @@
 			children = (
 				06896B27D7965268E7F40E88 /* App */,
 				BA7A6DAD9B9C3BB05BF7D701 /* Components */,
+				013B72D08DD326B6B88AE920 /* DesignDocument */,
 				0CB6C9C974412AB0B09020E6 /* DesignReview */,
 				6535B9F4F7B30F202875A0E4 /* Editor */,
 				93A762F8DFD6E67E503CB724 /* Preview */,
@@ -119,6 +179,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BDE2D544A424D4D9A6365CA7 /* UIDesignTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1144626D09F5EAA563010943 /* Build configuration list for PBXNativeTarget "UIDesignTests" */;
+			buildPhases = (
+				72BEE7FF8E43471065190CFF /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E1C5414B0361EAB016F0394F /* PBXTargetDependency */,
+			);
+			name = UIDesignTests;
+			packageProductDependencies = (
+			);
+			productName = UIDesignTests;
+			productReference = 520F97547373729E9941B2D5 /* UIDesignTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		DF135372D9154C8E95EC8DE3 /* UIDesign */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1367A7EE32ECB2E1D5709E68 /* Build configuration list for PBXNativeTarget "UIDesign" */;
@@ -145,6 +223,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					BDE2D544A424D4D9A6365CA7 = {
+						ProvisioningStyle = Automatic;
+					};
 					DF135372D9154C8E95EC8DE3 = {
 						ProvisioningStyle = Automatic;
 					};
@@ -165,6 +246,7 @@
 			projectRoot = "";
 			targets = (
 				DF135372D9154C8E95EC8DE3 /* UIDesign */,
+				BDE2D544A424D4D9A6365CA7 /* UIDesignTests */,
 			);
 		};
 /* End PBXProject section */
@@ -174,8 +256,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E23B2657459852E87AB03BDA /* CanvasPointer.swift in Sources */,
 				6383D289831ABD2D43B8EA2E /* CanvasRulers.swift in Sources */,
+				58F7032F028FA4F5980466CE /* CanvasSnapping.swift in Sources */,
+				6DC80A5B3300CB5B8D113DF4 /* ComponentDragSource.swift in Sources */,
 				4C2BB6198C46E1758480362E /* ComponentLibrary.swift in Sources */,
+				D3D7E7BE0897F07EB7022FA5 /* DesignCanvas.swift in Sources */,
+				D085EC78FCE9F7FAAB02DE1F /* DesignEditing.swift in Sources */,
+				A2BA4CD826E9D94525E8FE91 /* DesignFile.swift in Sources */,
+				0B28FCB03FDB6B4CF624E878 /* DesignInspector.swift in Sources */,
+				9C0BC721D17BCE4183833B4A /* DesignLayerView.swift in Sources */,
+				C57D139139470A8053DD7DD8 /* DesignProject.swift in Sources */,
 				881D7B006D6CE431A95A34E5 /* IOSArtboard.swift in Sources */,
 				4E65C622DE5AEAF852C0F4E6 /* PhonePreview.swift in Sources */,
 				54C969B198274390BCD07B55 /* ReviewCanvas.swift in Sources */,
@@ -190,9 +281,43 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		72BEE7FF8E43471065190CFF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C1E2AE79DF3952B8EE9CE24 /* DesignProjectTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		E1C5414B0361EAB016F0394F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DF135372D9154C8E95EC8DE3 /* UIDesign */;
+			targetProxy = 2711496EB861663AAB15F819 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		12BB58D7EE7A53210CADEDD7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UIDesign.app/Contents/MacOS/UIDesign";
+			};
+			name = Release;
+		};
 		703A42BD58406A16274AB9D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -203,7 +328,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "UI Design";
+				INFOPLIST_FILE = Sources/App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -270,6 +395,24 @@
 			};
 			name = Release;
 		};
+		8B7EC47A3F46B1F1F8A357B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/UIDesign.app/Contents/MacOS/UIDesign";
+			};
+			name = Debug;
+		};
 		B9F6627607FBBCA70448BD86 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -280,7 +423,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "UI Design";
+				INFOPLIST_FILE = Sources/App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -357,6 +500,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1144626D09F5EAA563010943 /* Build configuration list for PBXNativeTarget "UIDesignTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B7EC47A3F46B1F1F8A357B8 /* Debug */,
+				12BB58D7EE7A53210CADEDD7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		1367A7EE32ECB2E1D5709E68 /* Build configuration list for PBXNativeTarget "UIDesign" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

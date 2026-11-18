@@ -17,10 +17,10 @@ struct WorkbenchPalette {
     var ink: Color { color(0x1D1D1F, 0xF5F5F7) }
     var secondary: Color { color(0x515154, 0xCACAD0) }
     var propertyLabel: Color { color(0x3A3A3C, 0xD5D5DB) }
-    var muted: Color { color(highContrast ? 0x59595E : 0x8E8E93, 0xAAAAB0) }
+    var muted: Color { color(highContrast ? 0x59595E : 0x66666B, 0xAAAAB0) }
     var measure: Color { color(0x6D6D72, 0xB5B5BC) }
-    var accent: Color { color(highContrast ? 0x005BBE : 0x007AFF, 0x72B7FF) }
-    var selection: Color { Color(workbenchHex: highContrast ? 0x005BBE : 0x007AFF) }
+    var accent: Color { color(highContrast ? 0x00499A : 0x005AC7, 0x72B7FF) }
+    var selection: Color { Color(workbenchHex: highContrast ? 0x00499A : 0x005AC7) }
     var focusHalo: Color { accent.opacity(highContrast ? 0.72 : 0.35) }
     var searchFill: Color { wash(0.05, 0.09) }
     var hover: Color { wash(0.05, 0.08) }

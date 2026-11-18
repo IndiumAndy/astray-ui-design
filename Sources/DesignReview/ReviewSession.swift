@@ -31,7 +31,7 @@ enum ReviewState: String, CaseIterable, Identifiable {
     }
 }
 
-enum ReviewDevice: String, CaseIterable, Identifiable {
+enum ReviewDevice: String, Codable, CaseIterable, Identifiable, Sendable {
     case phone, largePhone
 
     var id: Self { self }
@@ -97,36 +97,84 @@ struct ReviewArrangement {
 
 @MainActor @Observable
 final class ReviewSession {
-    private(set) var state = ReviewState.blank
+    let design: DesignEditing?
+    private(set) var state: ReviewState
+    private var deviceSample = ReviewDevice.phone
+    private var inspectorOverride: Bool?
+    private let defaults: UserDefaults
+    private static let snapPreference = "canvasSnapEnabled"
+
+    init(state: ReviewState = .blank, document: DesignFile? = nil, defaults: UserDefaults = .standard) {
+        self.state = state
+        self.defaults = defaults
+        self.design = document.map(DesignEditing.init(file:))
+        snapEnabled = defaults.object(forKey: Self.snapPreference) as? Bool ?? true
+        open(state)
+    }
+
+    var editor: DesignEditing? { state == .blank ? design : nil }
+
+    var device: ReviewDevice {
+        get { editor?.page.device ?? deviceSample }
+        set {
+            if let editor { editor.setDevice(newValue) }
+            else { deviceSample = newValue }
+        }
+    }
+
+    var trailingPaneVisible: Bool { inspectorOverride ?? (editor?.selection != nil || state == .selection) }
+
+    func toggleInspector() { inspectorOverride = !trailingPaneVisible }
+
+    var selectedZoomPreset: CanvasZoom? { editor?.magnification == nil ? zoom : nil }
+
+    func setZoom(_ newValue: CanvasZoom) {
+        zoom = newValue
+        editor?.magnification = nil
+        if newValue == .fit { editor?.pan = .zero }
+    }
+
     private(set) var searchRequest = 0
-    var device = ReviewDevice.phone
-    var zoom = CanvasZoom.fit
+    private(set) var zoom = CanvasZoom.fit
     var libraryVisible = true
     var navigatorTab = NavigatorTab.components
-    var trailingPaneVisible = false
     var previewVisible = false
-    var snapEnabled = true
+    var snapEnabled: Bool {
+        didSet { defaults.set(snapEnabled, forKey: Self.snapPreference) }
+    }
     var arrangement = ReviewArrangement()
 
     func open(_ state: ReviewState) {
         self.state = state
         libraryVisible = true
         navigatorTab = state == .selection ? .layers : .components
-        trailingPaneVisible = state == .selection
+        inspectorOverride = nil
         previewVisible = state == .flow
         arrangement = ReviewArrangement()
-    }
-
-    func newDesign() {
-        device = .phone
-        zoom = .fit
-        open(.blank)
     }
 
     func requestSearch() {
         libraryVisible = true
         navigatorTab = .components
         searchRequest += 1
+    }
+}
+
+struct CanvasZoomOptions: View {
+    let session: ReviewSession
+
+    var body: some View {
+        ForEach(CanvasZoom.allCases) { zoom in
+            Button {
+                session.setZoom(zoom)
+            } label: {
+                if session.selectedZoomPreset == zoom {
+                    Label(zoom.title, systemImage: "checkmark")
+                } else {
+                    Text(zoom.title)
+                }
+            }
+        }
     }
 }
 

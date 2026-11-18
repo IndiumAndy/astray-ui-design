@@ -1,0 +1,129 @@
+{
+  "page" : {
+    "device" : "phone",
+    "id" : "38EF33E3-B4EB-4D1B-B188-9953E3D74686",
+    "layers" : [
+      {
+        "children" : [
+
+        ],
+        "frame" : [
+          [
+            32.00000000000006,
+            96.00000000000009
+          ],
+          [
+            240,
+            44
+          ]
+        ],
+        "id" : "A99A326F-B0C3-4619-816C-BA395F537AAB",
+        "isOn" : false,
+        "kind" : "title",
+        "spacing" : 12,
+        "text" : "标题"
+      },
+      {
+        "children" : [
+
+        ],
+        "frame" : [
+          [
+            32.00000000000006,
+            164
+          ],
+          [
+            256,
+            48
+          ]
+        ],
+        "id" : "AB497920-DD1A-4634-9CD5-60DF1771CD5F",
+        "isOn" : false,
+        "kind" : "input",
+        "spacing" : 12,
+        "text" : "请输入"
+      },
+      {
+        "children" : [
+
+        ],
+        "frame" : [
+          [
+            32.00000000000006,
+            235.99999999999991
+          ],
+          [
+            144,
+            48
+          ]
+        ],
+        "id" : "DA3DF0F2-4AD6-4A01-9B16-C326B82342AF",
+        "isOn" : false,
+        "kind" : "button",
+        "spacing" : 12,
+        "text" : "完成"
+      },
+      {
+        "children" : [
+          {
+            "children" : [
+
+            ],
+            "frame" : [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "id" : "BFF89B16-5103-4B53-ABBE-1BEBF4594184",
+            "isOn" : false,
+            "kind" : "label",
+            "spacing" : 12,
+            "text" : "消息通知"
+          },
+          {
+            "children" : [
+
+            ],
+            "frame" : [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "id" : "45EEC9B8-435D-4D2B-8E41-591FABCC5A21",
+            "isOn" : false,
+            "kind" : "toggle",
+            "spacing" : 12,
+            "text" : ""
+          }
+        ],
+        "frame" : [
+          [
+            32.00000000000006,
+            320
+          ],
+          [
+            288,
+            56
+          ]
+        ],
+        "id" : "1CDC2033-B52C-4714-A769-809D0198CF76",
+        "isOn" : false,
+        "kind" : "setting",
+        "spacing" : 12,
+        "text" : ""
+      }
+    ],
+    "title" : "页面 1"
+  },
+  "version" : 1
+}

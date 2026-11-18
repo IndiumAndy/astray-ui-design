@@ -4,6 +4,7 @@ struct WorkbenchToolbar: View {
     @Bindable var session: ReviewSession
     let layout: WorkbenchLayout
     let palette: WorkbenchPalette
+    let title: String
 
     var body: some View {
         HStack(spacing: 0) {
@@ -23,9 +24,10 @@ struct WorkbenchToolbar: View {
 
             ZStack {
                 HStack {
-                    Text(session.state.documentTitle)
+                    Text(title)
                         .font(.system(size: 13, weight: .semibold))
                         .lineLimit(1)
+                        .frame(maxWidth: max(0, layout.canvasWidth / 2 - 84), alignment: .leading)
                         .accessibilityAddTraits(.isHeader)
                     Spacer(minLength: 0)
                 }
@@ -50,11 +52,7 @@ struct WorkbenchToolbar: View {
                         .accessibilityHidden(true)
 
                     Menu {
-                        Picker("缩放", selection: $session.zoom) {
-                            ForEach(CanvasZoom.allCases) { zoom in
-                                Text(zoom.title).tag(zoom)
-                            }
-                        }
+                        CanvasZoomOptions(session: session)
                     } label: {
                         ToolbarFace(palette: palette) {
                             Text("\(Int((layout.canvasScale * 100).rounded()))%")
@@ -66,14 +64,15 @@ struct WorkbenchToolbar: View {
                     .menuIndicator(.hidden)
                     .fixedSize()
                     .accessibilityLabel("画布缩放")
-                    .accessibilityValue(session.zoom.title)
-                    .help("画布缩放 · \(session.zoom.title)")
+                    .accessibilityValue("\(Int((layout.canvasScale * 100).rounded()))%")
+                    .help("画布缩放")
 
                     toolbarButton(
                         session.snapEnabled ? "checkmark.square" : "square.dashed",
                         title: "吸附",
                         tooltip: session.snapEnabled ? "关闭吸附" : "打开吸附",
-                        active: session.snapEnabled
+                        active: session.snapEnabled,
+                        value: session.snapEnabled ? "开启" : "关闭"
                     ) {
                         session.snapEnabled.toggle()
                     }
@@ -96,7 +95,7 @@ struct WorkbenchToolbar: View {
                     tooltip: session.trailingPaneVisible ? "隐藏检查器（⌥⌘I）" : "显示检查器（⌥⌘I）",
                     active: session.trailingPaneVisible
                 ) {
-                    session.trailingPaneVisible.toggle()
+                    session.toggleInspector()
                 }
             }
             .padding(.trailing, 8)
@@ -107,7 +106,7 @@ struct WorkbenchToolbar: View {
     }
 
     private func toolbarButton(
-        _ symbol: String, title: String, tooltip: String, active: Bool = false,
+        _ symbol: String, title: String, tooltip: String, active: Bool = false, value: String = "",
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
@@ -118,6 +117,8 @@ struct WorkbenchToolbar: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(title)
+        .accessibilityValue(value)
+        .accessibilityIdentifier(symbol.hasPrefix("checkmark.square") || symbol == "square.dashed" ? "toolbar-snap" : symbol)
         .accessibilityAddTraits(active ? .isSelected : [])
         .help(tooltip)
     }

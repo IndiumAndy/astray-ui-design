@@ -3,10 +3,21 @@ import SwiftUI
 
 // Align the existing NSWindow buttons with the workbench toolbar.
 struct WindowControlsAlignment: NSViewRepresentable {
-    func makeNSView(context: Context) -> Anchor { Anchor() }
-    func updateNSView(_ view: Anchor, context: Context) {}
+    let attachDocument: (NSDocument) -> Void
+
+    func makeNSView(context: Context) -> Anchor { Anchor(attachDocument: attachDocument) }
+    func updateNSView(_ view: Anchor, context: Context) { view.attachDocument = attachDocument }
 
     final class Anchor: NSView {
+        var attachDocument: (NSDocument) -> Void
+
+        init(attachDocument: @escaping (NSDocument) -> Void) {
+            self.attachDocument = attachDocument
+            super.init(frame: .zero)
+        }
+
+        required init?(coder: NSCoder) { nil }
+
         override func viewWillMove(toWindow newWindow: NSWindow?) {
             NotificationCenter.default.removeObserver(self)
             super.viewWillMove(toWindow: newWindow)
@@ -18,7 +29,13 @@ struct WindowControlsAlignment: NSViewRepresentable {
             let center = NotificationCenter.default
             center.addObserver(self, selector: #selector(alignControls), name: NSWindow.didResizeNotification, object: window)
             center.addObserver(self, selector: #selector(alignControls), name: NSWindow.didExitFullScreenNotification, object: window)
-            DispatchQueue.main.async { [weak self] in self?.alignControls() }
+            DispatchQueue.main.async { [weak self] in
+                guard let self, let window = self.window else { return }
+                self.alignControls()
+                if let document = window.windowController?.document as? NSDocument {
+                    self.attachDocument(document)
+                }
+            }
         }
 
         @objc private func alignControls() {

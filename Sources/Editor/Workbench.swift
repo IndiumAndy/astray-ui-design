@@ -7,6 +7,7 @@ struct Workbench: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     @Bindable var session: ReviewSession
+    let title: String
 
     private var palette: WorkbenchPalette { WorkbenchPalette(appearance, contrast) }
 
@@ -15,7 +16,7 @@ struct Workbench: View {
             let layout = WorkbenchLayout(window: window.size, session: session)
 
             VStack(spacing: 0) {
-                WorkbenchToolbar(session: session, layout: layout, palette: palette)
+                WorkbenchToolbar(session: session, layout: layout, palette: palette, title: title)
                     .frame(height: WorkbenchLayout.toolbarHeight)
                 palette.seam.frame(height: WorkbenchLayout.separatorWidth)
 
@@ -26,11 +27,20 @@ struct Workbench: View {
                         palette.seam.frame(width: WorkbenchLayout.separatorWidth)
                     }
 
-                    ReviewCanvas(
-                        state: session.state, device: session.device, zoom: session.zoom,
-                        arrangement: session.arrangement, preview: layout.preview, palette: palette,
-                        dismissPreview: { session.previewVisible = false }
-                    )
+                    Group {
+                        if let editor = session.editor {
+                            DesignCanvas(editor: editor, zoom: session.zoom, snapEnabled: session.snapEnabled,
+                                         preview: layout.preview, palette: palette,
+                                         inspectorInset: layout.inspectorWidth == 0 ? 0 : layout.inspectorWidth + WorkbenchLayout.separatorWidth,
+                                         dismissPreview: { session.previewVisible = false })
+                        } else {
+                            ReviewCanvas(
+                                state: session.state, device: session.device, zoom: session.zoom,
+                                arrangement: session.arrangement, preview: layout.preview, palette: palette,
+                                dismissPreview: { session.previewVisible = false }
+                            )
+                        }
+                    }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .layoutPriority(1)
 
@@ -54,7 +64,6 @@ struct Workbench: View {
             .background(palette.panel)
         }
         .foregroundStyle(palette.ink)
-        .navigationTitle(session.state.documentTitle)
     }
 
     @ViewBuilder
@@ -69,7 +78,10 @@ struct Workbench: View {
 
     @ViewBuilder
     private var inspector: some View {
-        if session.state == .selection {
+        if let editor = session.editor, let selection = editor.selection {
+            DesignInspector(editor: editor, layer: selection.layer, parent: selection.parent, palette: palette)
+                .id(selection.layer.id)
+        } else if session.state == .selection {
             SelectionInspector(device: session.device, palette: palette, arrangement: $session.arrangement)
         } else {
             Text("未选择图层")
@@ -94,6 +106,7 @@ struct WorkbenchLayout {
     let inspectorWidth: CGFloat
     let preview: PreviewPlacement
     let canvasScale: CGFloat
+    let canvasWidth: CGFloat
 
     @MainActor
     init(window: CGSize, session: ReviewSession) {
@@ -105,11 +118,13 @@ struct WorkbenchLayout {
             width: max(1, window.width - sidebarWidth - inspectorWidth - sideSeams),
             height: max(1, window.height - Self.toolbarHeight - Self.separatorWidth)
         )
+        canvasWidth = viewport.width
         let flow = session.state == .flow
         preview = PreviewPlacement(viewport: viewport, visible: session.previewVisible, flow: flow)
         canvasScale = CanvasLayout(
             window: viewport, device: session.device.size, zoom: session.zoom,
-            flow: flow, trailingClearance: preview.canvasClearance
+            flow: flow, trailingClearance: preview.canvasClearance,
+            magnification: session.editor?.magnification
         ).scale
     }
 }

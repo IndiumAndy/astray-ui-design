@@ -1,6 +1,6 @@
 # UI Design
 
-原生 macOS SwiftUI 工作台。阶段 0 提供 Xcode 工程和三套可切换的设计稿。启动时进入空白画板。
+原生 macOS SwiftUI 工作台。阶段 1 从空白 iPhone 画板开始，可拖放组件、修改组合与精确坐标，并将设计保存为本地项目。
 
 ## 启动与构建
 
@@ -14,26 +14,36 @@ xcodebuild -project UIDesign.xcodeproj -scheme UIDesign \
 open .build/DerivedData/Build/Products/Debug/UIDesign.app
 ```
 
-工程最低目标为 macOS 15.0，使用 Swift 6 语言模式。本次使用 macOS 26.3、Xcode 26.6（17F113）及 Swift 6.3.3 在 Apple Silicon 上验证。应用依赖系统 SwiftUI 和 SF Symbols，使用本地临时签名，可直接构建和运行。
+工程最低目标为 macOS 15.0，使用 Swift 6。此次在 macOS 26.3、Xcode 26.6（17F113）的 Apple Silicon Mac 上验证。增加文件、目标或修改构建配置后，用 XcodeGen 2.46.0 执行 `xcodegen generate`。日常打开、构建和测试使用 Xcode 即可。
 
-`project.yml` 定义工程配置。增加目标或修改构建配置后，使用 XcodeGen 2.46.0 执行 `xcodegen generate`，提交配置与生成的工程及共享方案。日常打开、运行和构建只需要 Xcode。
+## 编辑与保存
 
-设计稿中的控件为本地 SwiftUI 样例，参照 Astryx 的字号、间距和圆角。后续接入组件运行库时锁定实际使用的版本及依赖树。[Meta Astryx 参考修订](https://github.com/meta/astryx/tree/be5d290db9f03921256b6b4a2628cfde4f7cb192/packages/native/apple)
+- 从左栏拖入标题、输入框、按钮或设置项。也可点按组件，或按 ⌘F 搜索后按回车插入。
+- 滚动或按住空格拖动画布。双指捏合缩放，也可用工具栏百分比切换倍率并重新适应窗口。吸附开关位于缩放右侧。
+- 单击选择组合，双击进组，⌘ 单击直达子控件。双击文字、或选中文字图层后按回车可编辑。回车提交，Esc 放弃草稿。选中图层后可用方向键微移，⇧ 方向键以 10 pt 为单位移动，⌥ 方向键切换图层。
+- 拖拽选框四角改尺寸。拖动组内间距手柄改间距。检查器也可输入位置、宽高与间距，或调整开关。⌥⌘I 收放检查器，⌘Z 撤销，⇧⌘Z 重做。
+- 首次按 ⌘S 选择名称和文件夹。存盘后的编辑会自动写回 `.uidesign`。也可用 ⌘O、「打开最近使用」或 Finder 双击重新打开。⌘N 单独建立空白项目。
+- ⌥⌘2 和 ⌥⌘3 查看阶段 0 的设置和连线样稿，⌥⌘1 返回当前项目。
 
-## 评审与验证
+## 测试与验收
 
-用菜单栏「设计稿」或 ⌥⌘1、⌥⌘2、⌥⌘3 切换三个状态。顶部加号或 ⌘F 展开「组件」并聚焦搜索，⌥⌘I 收放属性检查器，⌥⌘P 收放 iPhone 浮窗，⌘N 返回新建空白画板。「图层」显示样例的嵌套结构。菜单栏「工作台」提供设备、缩放和面板命令。
+```sh
+xcodebuild -project UIDesign.xcodeproj -scheme UIDesign \
+  -configuration Debug -destination 'platform=macOS' \
+  -derivedDataPath .build/DerivedData test
+```
 
-[阶段 0 设计稿与验收记录](docs/stage-0/设计评审.md)包含三张原生窗口截图、实际验证结果和后续交互验收项。
+[阶段 1 验收记录](docs/stage-1/验收记录.md)包含实测结果、画面和亲手试用步骤。[阶段 0 设计评审](docs/stage-0/设计评审.md)保留了原工作台样稿。
 
 ## 代码职责
 
-| 领域 | 阶段 0 中的位置 | 后续职责 |
+| 领域 | 当前入口 | 职责 |
 | --- | --- | --- |
-| 设计文档 | `Sources/DesignReview/` 持有评审用的临时会话，仅用于切换工作台状态 | 本地项目文件拥有页面、控件、样式、资源和连线。编辑操作和修订属于文档层 |
-| 编辑器 | `Sources/App/` 管理窗口与菜单，`Sources/Editor/` 呈现组件库、坐标画布与检查器 | 接收用户操作并提交文档变更。窗口、焦点、工具和选区属于编辑器会话 |
-| 组件与导出 | `Sources/Components/` 提供画板和预览共用的样例视图 | 组件层提供控件及组合的定义，导出层读取设计文档、生成可维护的 SwiftUI 和 React/Astryx 源码 |
-| 预览 | `Sources/Preview/` 显示固定的 iPhone 设计样例 | 消费已提交的设计修订，处理本机 iPhone 模拟器与浏览器预览的生命周期和事件 |
-| MCP | 阶段 7 | 本地 stdio 入口复用文档编辑、预览与导出服务 |
+| 设计文档 | `Sources/DesignDocument/` | 保存格式版本、画板、组件层级和稳定标识。通过原生文档系统读写、撤销与自动保存 |
+| 编辑器 | `Sources/Editor/` | 组件与图层侧栏、画布坐标、选择、拖放和检查器。已提交的编辑写入同一份设计文档 |
+| 样稿 | `Sources/DesignReview/`、`Sources/Components/ReviewPages.swift` | 阶段 0 设置与连线评审 |
+| 组件 | `Sources/Components/` | 画布与手机预览共用的 SwiftUI 控件 |
+| 预览 | `Sources/Preview/` | 当前项目或样稿的 iPhone 外观预览。阶段 2 接入模拟器与浏览器 |
+| 导出与 MCP | 分阶段计划 | 后续读取同一份文档并复用编辑逻辑 |
 
-设计原稿的文件格式和保存入口在阶段 1 引入。届时可从保存面板选用自己的应用仓库。阶段 0 的样例随工作台源码维护。
+SwiftUI 控件参照 Astryx 的字号、间距和圆角实现。[Meta Astryx 参考修订](https://github.com/meta/astryx/tree/be5d290db9f03921256b6b4a2628cfde4f7cb192/packages/native/apple)

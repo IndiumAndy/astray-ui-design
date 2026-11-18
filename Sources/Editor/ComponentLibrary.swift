@@ -6,7 +6,7 @@ struct ComponentLibrary: View {
     @Bindable var session: ReviewSession
 
     @State private var query = ""
-    @State private var selected: LibrarySample.ID?
+    @State private var selected: LayerKind?
     @FocusState private var searchFocused: Bool
 
     var body: some View {
@@ -23,8 +23,13 @@ struct ComponentLibrary: View {
                     .padding(.top, 8)
                 catalog
             case .layers:
-                LayerNavigator(state: session.state, palette: palette)
-                    .padding(.top, 8)
+                if let editor = session.editor {
+                    DesignLayerNavigator(editor: editor, palette: palette)
+                        .padding(.top, 8)
+                } else {
+                    LayerNavigator(state: session.state, palette: palette)
+                        .padding(.top, 8)
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -49,6 +54,21 @@ struct ComponentLibrary: View {
                 .focused($searchFocused)
                 .font(.system(size: 12))
                 .accessibilityIdentifier("library-search")
+                .onChange(of: query) { selected = nil }
+                .onSubmit {
+                    if let item = selected ?? matches.first { insert(item) }
+                }
+                .onKeyPress(keys: [.upArrow, .downArrow]) { press in
+                    guard !matches.isEmpty else { return .ignored }
+                    let index = selected.flatMap { matches.firstIndex(of: $0) }
+                    let next = press.key == .downArrow ? (index ?? -1) + 1 : (index ?? matches.count) - 1
+                    selected = matches[min(max(next, 0), matches.count - 1)]
+                    return .handled
+                }
+                .onExitCommand {
+                    if !query.isEmpty { query = "" }
+                    else { session.editor?.focusCanvas() }
+                }
             if !query.isEmpty {
                 Button {
                     query = ""
@@ -86,8 +106,8 @@ struct ComponentLibrary: View {
                     .padding(.top, 14)
             } else {
                 VStack(alignment: .leading, spacing: 0) {
-                    section("基础", items: matches.filter { !$0.isGroup })
-                    section("组合", items: matches.filter(\.isGroup))
+                    section("基础", items: matches.filter { $0 != .setting })
+                    section("组合", items: matches.filter { $0 == .setting })
                 }
                 .padding(.horizontal, 8)
                 .padding(.bottom, 8)
@@ -96,13 +116,18 @@ struct ComponentLibrary: View {
         .scrollIndicators(.never)
     }
 
-    private var matches: [LibrarySample] {
+    private var matches: [LayerKind] {
         let term = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        return LibrarySample.all.filter { term.isEmpty || $0.name.localizedStandardContains(term) }
+        return LayerKind.catalog.filter { term.isEmpty || $0.name.localizedStandardContains(term) }
+    }
+
+    private func insert(_ item: LayerKind) {
+        selected = item
+        session.editor?.insert(item)
     }
 
     @ViewBuilder
-    private func section(_ title: String, items: [LibrarySample]) -> some View {
+    private func section(_ title: String, items: [LayerKind]) -> some View {
         if !items.isEmpty {
             VStack(alignment: .leading, spacing: 0) {
                 Text(title)
@@ -113,15 +138,23 @@ struct ComponentLibrary: View {
                     .padding(.bottom, 4)
                 ForEach(items) { item in
                     Button {
-                        selected = item.id
+                        insert(item)
                     } label: {
                         NavigatorRow(
-                            title: item.name, symbol: item.symbol, selected: selected == item.id,
+                            title: item.name, symbol: item.symbol, selected: searchFocused && selected == item.id,
                             palette: palette
                         )
                     }
                     .buttonStyle(.plain)
-                    .accessibilityAddTraits(selected == item.id ? .isSelected : [])
+                    .accessibilityAddTraits(searchFocused && selected == item.id ? .isSelected : [])
+                    .accessibilityIdentifier("library-\(item.rawValue)")
+                    .help(session.editor == nil ? item.name : "插入\(item.name)，也可拖到画板")
+                    .overlay {
+                        if session.editor != nil {
+                            ComponentDragSource(kind: item) { insert(item) }
+                                .accessibilityHidden(true)
+                        }
+                    }
                 }
             }
             .padding(.top, 14)
@@ -312,20 +345,67 @@ private struct LayerSample: Identifiable {
     }
 }
 
-private struct LibrarySample: Identifiable {
-    let name: String
-    let symbol: String
-    var isGroup = false
-    var id: String { name }
+private struct DesignLayerNavigator: View {
+    let editor: DesignEditing
+    let palette: WorkbenchPalette
 
-    static let all = [
-        Self(name: "标题", symbol: "textformat.size"),
-        Self(name: "正文", symbol: "text.alignleft"),
-        Self(name: "输入框", symbol: "character.textbox"),
-        Self(name: "按钮", symbol: "rectangle"),
-        Self(name: "开关", symbol: "switch.2"),
-        Self(name: "带标签输入框", symbol: "text.and.command.macwindow", isGroup: true),
-        Self(name: "设置项", symbol: "slider.horizontal.3", isGroup: true),
-        Self(name: "列表行", symbol: "list.bullet", isGroup: true)
-    ]
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 4) {
+                NavigatorRow(title: editor.page.title, symbol: "iphone", selected: false, palette: palette,
+                             showsDisclosureColumn: true)
+                    .accessibilityAddTraits(.isHeader)
+                ForEach(editor.page.layers) { layer in
+                    DesignLayerBranch(layer: layer, editor: editor, palette: palette)
+                }
+            }
+            .padding(.horizontal, 8)
+        }
+        .scrollIndicators(.never)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("图层")
+    }
+}
+
+private struct DesignLayerBranch: View {
+    let layer: DesignLayer
+    let editor: DesignEditing
+    let palette: WorkbenchPalette
+    @State private var expanded = true
+
+    var body: some View {
+        if layer.children.isEmpty {
+            row(layer, depth: 1)
+        } else {
+            HStack(spacing: 0) {
+                Button {
+                    expanded.toggle()
+                } label: {
+                    Image(systemName: expanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 9, weight: .semibold))
+                        .frame(width: 24, height: 28)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(expanded ? "折叠" : "展开")
+                row(layer, depth: 0, disclosureColumn: false)
+            }
+            if expanded {
+                ForEach(layer.children) { row($0, depth: 2) }
+            }
+        }
+    }
+
+    private func row(_ item: DesignLayer, depth: Int, disclosureColumn: Bool = true) -> some View {
+        let selected = editor.selectedID == item.id
+        return Button {
+            editor.select(item.id)
+        } label: {
+            NavigatorRow(title: item.name, symbol: item.kind.symbol, selected: selected, palette: palette,
+                         depth: depth, showsDisclosureColumn: disclosureColumn)
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+        .accessibilityIdentifier("layer-\(item.kind.rawValue)")
+    }
 }

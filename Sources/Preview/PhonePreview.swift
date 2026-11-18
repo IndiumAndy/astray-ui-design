@@ -46,6 +46,7 @@ struct PhonePreview: View {
     let width: CGFloat
     let availableHeight: CGFloat
     let palette: WorkbenchPalette
+    var page: DesignPage? = nil
     let close: () -> Void
 
     private static let headerHeight: CGFloat = 32
@@ -85,11 +86,15 @@ struct PhonePreview: View {
             .overlay(alignment: .bottom) { palette.groupSeam.frame(height: 1) }
 
             DevicePage(size: device.size, scale: scale) {
-                IOSArtboard { phonePalette in
-                    switch state {
-                    case .blank: Color.clear
-                    case .selection: SettingsSample(palette: phonePalette, arrangement: arrangement)
-                    case .flow: ContactDetailSample(palette: phonePalette)
+                if let page {
+                    DesignPagePreview(page: page)
+                } else {
+                    IOSArtboard { phonePalette in
+                        switch state {
+                        case .blank: Color.clear
+                        case .selection: SettingsSample(palette: phonePalette, arrangement: arrangement)
+                        case .flow: ContactDetailSample(palette: phonePalette)
+                        }
                     }
                 }
             }

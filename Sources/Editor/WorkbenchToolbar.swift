@@ -60,7 +60,10 @@ struct WorkbenchToolbar: View {
                             Button("在默认浏览器运行", action: session.runWeb)
                                 .disabled(session.run.webBusy)
                             Divider()
-                            Button("导出源码", action: session.exportProject)
+                            Button("导出选中页面…", action: session.exportSelection)
+                                .disabled(session.run.exportBusy)
+                            Button("导出完整工程…", action: session.exportProject)
+                                .disabled(session.run.exportBusy)
                         } label: {
                             ToolbarFace(palette: palette) {
                                 if session.run.webBusy {

@@ -1,6 +1,6 @@
 import Foundation
 
-struct PreviewIssue: LocalizedError {
+struct PreviewIssue: LocalizedError, Equatable {
     let text: String
     var errorDescription: String? { text }
 }

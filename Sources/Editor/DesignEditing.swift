@@ -12,6 +12,9 @@ final class DesignEditing {
     private(set) var focusRequest = 0
     private var currentPageID: UUID?
     private(set) var additionalSelection: Set<UUID> = []
+    var selectedBoards: Set<UUID> = []
+    var librarySave: TemplateSaveRequest?
+    var libraryIssue: String?
     var usesDeviceLayout = false
     var showsFullPage = false
     var imageIssue: String?
@@ -58,11 +61,67 @@ final class DesignEditing {
 
     func showPage(_ id: UUID) {
         currentPageID = id
+        selectedBoards = []
         textEditor = nil
         select(nil)
         pan = .zero
         showsFullPage = false
         referenceOffset = nil
+    }
+
+    func selectBoards(_ ids: Set<UUID>) {
+        select(nil)
+        selectedBoards = ids
+    }
+
+    var selectedTemplateLayers: [DesignLayer] {
+        if let selection, let parent = selection.parent {
+            var layer = selection.layer
+            layer.frame = frame(of: layer)
+            layer.geometry?.frame = nil
+            if parent.kind == .setting { layer.deviceLayouts = nil }
+            return [layer]
+        }
+        return page.layers.filter { selectedIDs.contains($0.id) }
+    }
+
+    func requestLibrarySave(layers: Bool, replacing: PersonalTemplate? = nil) {
+        if layers && selectedTemplateLayers.isEmpty { return }
+        librarySave = TemplateSaveRequest(layers: layers,
+                                          selectedPages: selectedBoards.isEmpty ? [page.id] : selectedBoards,
+                                          name: replacing?.name ?? (layers ? selectedTemplateLayers.first?.name ?? "" : page.title),
+                                          replacing: replacing?.id)
+    }
+
+    func insertTemplate(_ template: PersonalTemplate, at origin: CGPoint? = nil) {
+        do {
+            let proposed = template.kind.insertsLayers
+                ? origin ?? insertionFrame(template.project.page.layers.first?.kind ?? .title).origin
+                : nil
+            let insertion = try template.instantiate(into: project, pageID: page.id, origin: proposed)
+            file.apply(insertion.project, undoManager: undoManager, action: "插入模板")
+            if template.kind.insertsLayers {
+                select(insertion.layers.first)
+                additionalSelection = Set(insertion.layers.dropFirst())
+                focusCanvas()
+            } else {
+                showPage(insertion.page)
+            }
+        } catch {
+            libraryIssue = error.localizedDescription
+        }
+    }
+
+    func applyCanvasBatch(_ operations: [CanvasOperation], page: UUID, revision: String) throws -> String {
+        let next = try DesignBatch.applying(operations, to: project, pageID: page, expecting: revision)
+        let nextRevision = try DesignBatch.revision(next)
+        file.apply(next, undoManager: undoManager, action: "本机 MCP 编辑")
+        return nextRevision
+    }
+
+    func setContainerGap(_ layer: UUID, to value: CGFloat) {
+        let device = scope
+        update(layer, action: "修改间距") { DesignBatch.setGap(value, on: &$0, device: device) }
     }
 
     func updateBehavior(_ id: UUID, action: String, _ edit: (inout LayerBehavior) -> Void) {
@@ -132,6 +191,7 @@ final class DesignEditing {
 
     func select(_ id: UUID?) {
         selectedID = id
+        selectedBoards = []
         additionalSelection = []
         enteredGroup = page.selection(id)?.parent?.id
     }

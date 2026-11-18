@@ -2,6 +2,25 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
+enum CanvasDragPayload {
+    case component(LayerKind)
+    case template(UUID)
+
+    var data: Data {
+        switch self {
+        case .component(let kind): Data(kind.rawValue.utf8)
+        case .template(let id): Data(id.uuidString.utf8)
+        }
+    }
+
+    init?(data: Data) {
+        guard let raw = String(data: data, encoding: .utf8) else { return nil }
+        if let kind = LayerKind(rawValue: raw) { self = .component(kind) }
+        else if let id = UUID(uuidString: raw) { self = .template(id) }
+        else { return nil }
+    }
+}
+
 struct CanvasPointer: NSViewRepresentable {
     let focusRequest: Int
     let down: (CGPoint, NSEvent, Bool) -> Void
@@ -11,7 +30,7 @@ struct CanvasPointer: NSViewRepresentable {
     let zoom: (CGFloat, CGPoint) -> Void
     let key: (NSEvent) -> Bool
     let focus: (Bool) -> Void
-    let drop: (LayerKind?, CGPoint, Bool) -> Bool
+    let drop: (CanvasDragPayload?, CGPoint, Bool) -> Bool
 
     func makeNSView(context: Context) -> Surface { Surface(input: self) }
 
@@ -30,7 +49,7 @@ struct CanvasPointer: NSViewRepresentable {
         static let componentType = NSPasteboard.PasteboardType(UTType.uiDesignComponent.identifier)
         var input: CanvasPointer
         private var spaceHeld = false
-        private var originalDragKind: LayerKind?
+        private var originalDragKind: CanvasDragPayload?
 
         init(input: CanvasPointer) {
             self.input = input
@@ -115,7 +134,7 @@ struct CanvasPointer: NSViewRepresentable {
 
         override func draggingEntered(_ sender: any NSDraggingInfo) -> NSDragOperation {
             let data = sender.draggingPasteboard.data(forType: Self.componentType)
-            originalDragKind = data.flatMap { String(data: $0, encoding: .utf8) }.flatMap(LayerKind.init(rawValue:))
+            originalDragKind = data.flatMap(CanvasDragPayload.init(data:))
             return draggingUpdated(sender)
         }
 

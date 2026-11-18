@@ -57,7 +57,7 @@ struct RuntimeLayer: Codable, Equatable, Identifiable, Sendable {
     let width: Double
     let height: Double
     let field: ContactField?
-    let destination: String?
+    var destination: String?
     let savesContact: Bool?
     let isOn: Bool
     var parent: String?

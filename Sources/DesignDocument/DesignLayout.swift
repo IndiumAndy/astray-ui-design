@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 
 enum DesignInputType: String, Codable, CaseIterable, Identifiable, Sendable {

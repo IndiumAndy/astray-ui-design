@@ -65,6 +65,24 @@ struct Workbench: View {
             .background(palette.panel)
         }
         .foregroundStyle(palette.ink)
+        .sheet(item: Binding(get: { session.editor?.librarySave },
+                             set: { session.editor?.librarySave = $0 })) { request in
+            if let editor = session.editor { TemplateSaveSheet(editor: editor, request: request) }
+        }
+        .alert("个人库操作失败", isPresented: Binding(
+            get: { session.editor?.libraryIssue != nil },
+            set: { if !$0 { session.editor?.libraryIssue = nil } }
+        )) {} message: { Text(session.editor?.libraryIssue ?? "") }
+        .sheet(item: Binding(get: { session.run.exportRequest }, set: { session.run.exportRequest = $0 })) { request in
+            if let editor = session.editor { SourceExportSheet(editor: editor, request: request, run: session.run) }
+        }
+        .sheet(isPresented: Binding(get: { session.run.exportReview != nil }, set: {
+            if !$0 { session.run.exportReview = nil }
+        })) {
+            if let update = session.run.exportReview {
+                SourceUpdateSheet(update: update) { choices in session.run.applyExport(update, choices: choices) }
+            }
+        }
         .alert("预览或导出失败", isPresented: Binding(
             get: { session.run.issue != nil },
             set: { if !$0 { session.run.issue = nil } }

@@ -17,6 +17,8 @@ struct DesignCanvas: View {
     @State private var canvasFocused = false
     @State private var wirePoint: CGPoint?
     @State private var boardDrag: (id: UUID, origin: CGPoint)?
+    @State private var marquee: CGRect?
+    @State private var templateDropFrame: CGRect?
 
     var body: some View {
         GeometryReader { geometry in
@@ -36,6 +38,18 @@ struct DesignCanvas: View {
                     connections(layout)
                     guides(layout)
                     outline(layout)
+                    Canvas { context, _ in
+                        for page in editor.project.pages where editor.selectedBoards.contains(page.id) {
+                            context.stroke(Path(boardFrame(page, layout: layout)), with: .color(palette.accent), lineWidth: 2)
+                        }
+                        for frame in [marquee, templateDropFrame].compactMap({ $0 }) {
+                            context.fill(Path(frame), with: .color(palette.accent.opacity(0.10)))
+                            context.stroke(Path(frame), with: .color(palette.accent),
+                                           style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                        }
+                    }
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
                 }
                 .frame(width: viewport.width, height: viewport.height)
                 .mask(alignment: .bottomTrailing) {
@@ -470,6 +484,12 @@ struct DesignCanvas: View {
             let frame = boardFrame(page, layout: layout)
             return CGRect(x: frame.minX, y: frame.minY - 32, width: frame.width, height: 32).contains(point)
         }) {
+            if event.modifierFlags.contains(.shift) {
+                var selection = editor.selectedBoards
+                if selection.remove(page.id) == nil { selection.insert(page.id) }
+                editor.selectBoards(selection)
+                return
+            }
             tracking = Tracking(start: point, pan: editor.pan, action: .board(page.id, origins[page.id] ?? .zero))
             return
         }
@@ -496,7 +516,9 @@ struct DesignCanvas: View {
         }
         guard let root = roots.last(where: { editor.frame(of: $0, using: scene).contains(location) }) else {
             let action: Tracking.Action
-            if let image = editor.page.referenceImage, !image.isLocked, !image.isHidden,
+            if event.modifierFlags.contains(.shift) {
+                action = .marquee
+            } else if let image = editor.page.referenceImage, !image.isLocked, !image.isHidden,
                editor.page.bounds.contains(location) {
                 action = .reference(image.offset)
             } else {
@@ -549,6 +571,9 @@ struct DesignCanvas: View {
         case .pan, .background, .otherPage:
             editor.pan = CGPoint(x: tracking.pan.x + point.x - tracking.start.x,
                                  y: tracking.pan.y + point.y - tracking.start.y)
+        case .marquee:
+            marquee = CGRect(x: min(point.x, tracking.start.x), y: min(point.y, tracking.start.y),
+                             width: abs(point.x - tracking.start.x), height: abs(point.y - tracking.start.y))
         case .connect:
             wirePoint = point
         case let .board(id, origin):
@@ -595,9 +620,18 @@ struct DesignCanvas: View {
             live = nil
             boardDrag = nil
             wirePoint = nil
+            marquee = nil
         }
         guard let tracking else { return }
         drag(point, layout: layout)
+        if case .marquee = tracking.action {
+            if let marquee {
+                editor.selectBoards(Set(editor.project.pages.filter {
+                    boardFrame($0, layout: layout).intersects(marquee)
+                }.map(\.id)))
+            }
+            return
+        }
         if case let .connect(id) = tracking.action {
             if wirePoint != nil, let page = dropBoard(at: point, layout: layout) {
                 let kind: ActionKind = NSEvent.modifierFlags.contains(.option) ? .sheet : .navigate
@@ -647,9 +681,27 @@ struct DesignCanvas: View {
         }
     }
 
-    private func receive(_ kind: LayerKind?, at point: CGPoint, commit: Bool, layout: CanvasLayout) -> Bool {
+    private func receive(_ payload: CanvasDragPayload?, at point: CGPoint, commit: Bool, layout: CanvasLayout) -> Bool {
         let destination = layout.documentPoint(point)
-        guard let kind, LayerKind.catalog.contains(kind), CGRect(origin: .zero, size: editor.boardSize(using: editor.layout)).contains(destination),
+        templateDropFrame = nil
+        if case .template(let id) = payload,
+           let template = PersonalLibrary.shared.templates.first(where: { $0.id == id }),
+           point.x >= CanvasLayout.ruler, point.y >= CanvasLayout.ruler {
+            let pageFrame = CGRect(origin: .zero, size: editor.boardSize(using: editor.layout))
+            if template.kind.insertsLayers, !pageFrame.contains(destination) { return false }
+            if commit {
+                editor.insertTemplate(template, at: destination)
+            } else if template.kind.insertsLayers {
+                let bounds = template.project.page.layers.reduce(CGRect.null) { $0.union($1.frame) }
+                if !bounds.isNull {
+                    templateDropFrame = layout.canvasRect(CGRect(origin: destination, size: bounds.size).intersection(pageFrame))
+                }
+            } else {
+                templateDropFrame = boardFrame(editor.page, layout: layout)
+            }
+            return true
+        }
+        guard case .component(let kind) = payload, LayerKind.catalog.contains(kind), CGRect(origin: .zero, size: editor.boardSize(using: editor.layout)).contains(destination),
               point.x >= CanvasLayout.ruler, point.y >= CanvasLayout.ruler else {
             if case .drop = live { live = nil }
             return false
@@ -793,7 +845,7 @@ struct DesignCanvas: View {
         let action: Action
 
         enum Action {
-            case background, pan
+            case background, pan, marquee
             case board(UUID, CGPoint), connect(UUID), otherPage(UUID)
             case move(DesignLayer, frame: CGRect), resize(DesignLayer, frame: CGRect, Corner)
             case spacing(DesignLayer), reorder(DesignLayer, DesignLayer), reference(CGPoint)

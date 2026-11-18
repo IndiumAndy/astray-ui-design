@@ -48,6 +48,10 @@ private struct WorkbenchDocument: View {
             .preferredColorScheme(launch.appearance)
             .ignoresSafeArea(.container, edges: .top)
             .focusedSceneValue(\.workbenchSession, session)
+            .task(id: configuration.fileURL) {
+                session.allowsLocalMCP = false
+                if let url = configuration.fileURL { await session.serveLocalMCP(for: url) }
+            }
             .onAppear {
                 if launch.focusSearch { session.requestSearch() }
             }
@@ -111,6 +115,14 @@ private struct WorkbenchCommands: Commands {
                     }
                 }
                 if let editor = session.editor {
+                    Toggle("允许本机 MCP", isOn: $session.allowsLocalMCP)
+                    Button("显示个人库") {
+                        session.libraryVisible = true
+                        session.navigatorTab = .personal
+                    }
+                    Button("存入个人库：所选图层…") { editor.requestLibrarySave(layers: true) }
+                        .disabled(editor.selectedTemplateLayers.isEmpty)
+                    Button("存入个人库：页面或流程…") { editor.requestLibrarySave(layers: false) }
                     Menu("画板比例") { aspectOptions(editor) }
                     Toggle("展开整页", isOn: Binding(get: { editor.showsFullPage }, set: { editor.showsFullPage = $0 }))
                     Toggle("仅改\(editor.page.deviceLayout.title)布局",
@@ -139,7 +151,10 @@ private struct WorkbenchCommands: Commands {
                     .keyboardShortcut("r", modifiers: [.command, .option])
                     .disabled(session.run.webBusy)
                 Divider()
-                Button("导出源码", action: session.exportProject)
+                Button("导出选中页面…", action: session.exportSelection)
+                    .disabled(session.run.exportBusy)
+                Button("导出完整工程…", action: session.exportProject)
+                    .disabled(session.run.exportBusy)
             }
         }
         CommandMenu("设计稿") {

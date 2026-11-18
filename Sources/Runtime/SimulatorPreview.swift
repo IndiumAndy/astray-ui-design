@@ -100,6 +100,40 @@ final class SimulatorPreview {
         }
     }
 
+    func perform(_ input: MCPPreviewInput) async throws -> Data {
+        guard Self.active === self, loadedURL != nil, frame != nil else { throw CanvasBridgeError.noPreview }
+        func point(_ x: CGFloat?, _ y: CGFloat?) throws -> CGPoint {
+            guard let x, let y, x.isFinite, y.isFinite,
+                  x >= 0, y >= 0, x < Self.screen.width, y < Self.screen.height else {
+                throw CanvasBridgeError.invalidRequest
+            }
+            return CGPoint(x: x, y: y)
+        }
+        let previousIssue = issue
+        switch input.kind {
+        case .screenshot: break
+        case .tap:
+            let location = try point(input.x, input.y)
+            touch(from: location, to: location)
+        case .swipe:
+            touch(from: try point(input.x, input.y), to: try point(input.endX, input.endY))
+        case .text:
+            guard let text = input.text, !text.isEmpty, text.utf8.count <= 8192 else {
+                throw CanvasBridgeError.invalidRequest
+            }
+            characters(text)
+        }
+        if input.kind != .screenshot {
+            await inputQueue?.value
+            if let issue, issue != previousIssue { throw issue }
+            try await Task.sleep(for: .milliseconds(250))
+        }
+        guard let frame, let data = NSBitmapImageRep(cgImage: frame).representation(using: .png, properties: [:]) else {
+            throw CanvasBridgeError.noPreview
+        }
+        return data
+    }
+
     func key(_ usage: UInt16) { send(["key", String(usage)]) }
 
     func shortcut(_ usage: UInt16) { send(["key-combo", "--modifiers", "227", "--key", String(usage)]) }

@@ -4,23 +4,42 @@ import SwiftUI
 // SwiftUI keeps the row's keyboard and accessibility actions. AppKit supplies
 // the same local pasteboard type the canvas reads synchronously during hover.
 struct ComponentDragSource: NSViewRepresentable {
-    let kind: LayerKind
+    let payload: CanvasDragPayload
+    let symbol: String
+    let title: String
     let activate: () -> Void
 
-    func makeNSView(context: Context) -> Surface { Surface(kind: kind, activate: activate) }
+    init(kind: LayerKind, activate: @escaping () -> Void) {
+        self.init(payload: .component(kind), symbol: kind.symbol, title: kind.name, activate: activate)
+    }
+
+    init(payload: CanvasDragPayload, symbol: String, title: String, activate: @escaping () -> Void) {
+        self.payload = payload
+        self.symbol = symbol
+        self.title = title
+        self.activate = activate
+    }
+
+    func makeNSView(context: Context) -> Surface { Surface(payload: payload, symbol: symbol, title: title, activate: activate) }
 
     func updateNSView(_ view: Surface, context: Context) {
-        view.kind = kind
+        view.payload = payload
+        view.symbol = symbol
+        view.title = title
         view.activate = activate
     }
 
     final class Surface: NSView, NSDraggingSource {
-        var kind: LayerKind
+        var payload: CanvasDragPayload
+        var symbol: String
+        var title: String
         var activate: () -> Void
         private var down: CGPoint?
 
-        init(kind: LayerKind, activate: @escaping () -> Void) {
-            self.kind = kind
+        init(payload: CanvasDragPayload, symbol: String, title: String, activate: @escaping () -> Void) {
+            self.payload = payload
+            self.symbol = symbol
+            self.title = title
             self.activate = activate
             super.init(frame: .zero)
             setAccessibilityElement(false)
@@ -41,11 +60,11 @@ struct ComponentDragSource: NSViewRepresentable {
             guard let down, hypot(point.x - down.x, point.y - down.y) >= 3 else { return }
             self.down = nil
 
-            let payload = NSPasteboardItem()
-            payload.setData(Data(kind.rawValue.utf8), forType: CanvasPointer.Surface.componentType)
-            let item = NSDraggingItem(pasteboardWriter: payload)
+            let pasteboard = NSPasteboardItem()
+            pasteboard.setData(payload.data, forType: CanvasPointer.Surface.componentType)
+            let item = NSDraggingItem(pasteboardWriter: pasteboard)
             let local = convert(point, from: nil)
-            let symbol = NSImage(systemSymbolName: kind.symbol, accessibilityDescription: kind.name)
+            let symbol = NSImage(systemSymbolName: symbol, accessibilityDescription: title)
             item.setDraggingFrame(CGRect(x: local.x - 9, y: local.y - 9, width: 18, height: 18), contents: symbol)
             beginDraggingSession(with: [item], event: event, source: self)
         }

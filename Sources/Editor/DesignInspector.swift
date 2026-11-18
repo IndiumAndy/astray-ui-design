@@ -152,7 +152,7 @@ struct DesignInspector: View {
             }
             if spec.arrangement != .free {
                 number("间距", value: spec.gap ?? 12, range: 0...192, unit: "pt") { value in
-                    editor.setPlacement(layer.id) { $0.gap = value }
+                    editor.setContainerGap(layer.id, to: value)
                 }
             }
             if spec.arrangement == .grid {

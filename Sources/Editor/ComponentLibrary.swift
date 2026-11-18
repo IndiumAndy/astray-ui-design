@@ -35,11 +35,13 @@ struct ComponentLibrary: View {
                 if let editor = session.editor {
                     PageNavigator(editor: editor, palette: palette)
                 }
+            case .personal:
+                if let editor = session.editor { PersonalLibraryView(editor: editor, palette: palette) }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("组件与图层")
+        .accessibilityLabel("工作台侧栏")
         .task(id: session.searchRequest) {
             guard session.searchRequest > 0, session.navigatorTab == .components else { return }
             await Task.yield()
@@ -172,7 +174,7 @@ private struct NavigatorTabs: NSViewRepresentable {
     @Binding var selection: NavigatorTab
     let showsPages: Bool
 
-    private var tabs: [NavigatorTab] { showsPages ? [.components, .layers, .pages] : [.components, .layers] }
+    private var tabs: [NavigatorTab] { showsPages ? [.components, .layers, .pages, .personal] : [.components, .layers] }
 
     func makeCoordinator() -> Coordinator { Coordinator(selection: $selection, tabs: tabs) }
 

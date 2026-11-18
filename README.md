@@ -30,7 +30,7 @@ open .build/DerivedData/Build/Products/Debug/UIDesign.app
 1. 在 Xcode 运行编辑器。选「文件 → 新建联系人示例」，在侧栏「页面」里打开「联系人」。
 2. 选「运行 → 在 iPhone 模拟器运行」。点联系人姓名进入详情，可在面板内点按、滑动和输入。右上角可收起面板。
 3. 回到「联系人」画板，选「运行 → 在默认浏览器运行」。打开同一条记录并输入昵称。切换画布到「联系人详情」，挪动保存按钮，松手后两端更新。
-4. 选「运行 → 导出源码」，填写新文件夹名称。导出目录的 README 标明独立构建方式及保存回调位置。
+4. 选「运行 → 导出完整工程」，填写新文件夹名称。导出目录的 README 标明独立构建方式及保存回调位置。
 
 模拟器预览需要完整 Xcode、支持 iPhone 17 Pro 的 iOS 模拟器运行时，以及 [AXe 2.0.4](https://github.com/cameroncooke/AXe/releases/tag/v2.0.4)。编辑器使用名为 `UI Design Stage 2` 的专用模拟器。AXe 可以位于 PATH、`UIDESIGN_AXE` 指定的路径，或 `~/Library/Application Support/UI Design/Tools/AXe/axe`。使用发布页的通用压缩包时，把整个包解压到该目录，以保留同级 Frameworks。模拟器画面按帧传输，拖动松手后会发送一次滑动。
 
@@ -54,6 +54,29 @@ Web 预览需要 Node.js 22.12 或更新版本及 npm。首次打开时会根据
 - 在「配置列表…」设定数据键、行字段、行高和示例数据。用「预览状态」检查有数据、空数据、加载中和加载失败。空态按钮可连接到另一页。
 - 选「文件 → 新建交互示例」，或打开[交互验收样例](docs/stage-4/交互验收样例.uidesign)。在通讯录进入设置、打开关于面板，或点联系人进入详情。导出的 README 说明宿主数据和动作入口。
 
+## 个人库
+
+- 选中一个组件或一组图层，打开左栏「个人库」并选「存入个人库 → 所选图层」。单页或流程用「页面或流程」保存。在画布空白处按住 ⇧ 框选画板，也可在保存面板勾选页面。
+- 有选区外连线时，可一并带入目标页面（包括它们链接的页面），或清除这些连线、留待重连。选中页面之间的连线和列表行绑定会跟着副本。
+- 从「个人库」将模板拖入画布，或激活模板行。右键选「新建项目」可以不改当前文档。更新模板须明确选择「用…更新模板」，不会修改已插入的副本。
+- .uidesign 内含图片和项目样式，可整体移动后重开。重复插入同一表单时会区分表单组，宿主动作名和字段键保持不变。
+
+[个人库验收样例](docs/stage-5/个人库验收样例.uidesign)可用来验证保存、移动和双项目复用。[阶段 5 验收记录](docs/stage-5/验收记录.md)区分自动和实窗验证。
+
+## 选页导出与更新
+
+- 「运行 → 导出选中页面」从当前画板或框选范围开始，可在面板勾选页面。两页之间的连线保留；未选目标转为宿主动作，事件名和目标见导出清单。
+- 「运行 → 导出完整工程」包含入口和全部页面，可在关闭编辑器后独立构建。生成的 README 写明 SwiftUI 和 React/Astryx 依赖、数据与回调约定。
+- 「更新已有目录」先显示受影响的文件和新旧源码对照。手改的生成文件默认保留，可逐个选择采用新版本；宿主回调文件保持原样。取消不会写入目录。
+
+[阶段 6 验收记录](docs/stage-6/验收记录.md)
+
+## 本机 MCP
+
+运行 Tools/build-mcp.sh 后可让本机 MCP 客户端通过 stdio 读取、编辑、操作内嵌模拟器或导出当前项目。配置方式和工具参数见[本机 MCP 指南](docs/stage-7/本机MCP指南.md)，测试和实际预览见[阶段 7 验收记录](docs/stage-7/验收记录.md)。打开的文档默认不允许 MCP 访问，在当前窗口打开权限后生效。
+
+[首版亲手验收清单](docs/stage-8/亲手验收.md)包含登录、设置、通讯录三条路线；用户已确认阶段 8 通过，见[验收记录](docs/stage-8/验收记录.md)。
+
 ## 测试与验收
 
 ```sh
@@ -73,6 +96,7 @@ xcodebuild -project UIDesign.xcodeproj -scheme UIDesign \
 | 样稿 | `Sources/DesignReview/`、`Sources/Components/ReviewPages.swift` | 阶段 0 设置与连线评审 |
 | 组件 | `Sources/Components/` | 画布与手机预览共用的 SwiftUI 控件 |
 | 预览 | `Sources/Preview/`、`Sources/Runtime/` | iPhone 模拟器帧和输入、默认浏览器运行及文档更新 |
+| 本机 MCP | Tools/UIDesignMCP/、Sources/DesignDocument/CanvasBridge.swift | 固定项目、文本协议和带修订的整批操作 |
 | 导出 | `Sources/Export/`、`Runtime/` | SwiftUI 和 React/Astryx 工程模板，以及页面控件和事件入口的生成 |
 
 SwiftUI 控件参照 Astryx 的字号、间距和圆角实现。[Meta Astryx 参考修订](https://github.com/meta/astryx/tree/be5d290db9f03921256b6b4a2628cfde4f7cb192/packages/native/apple)

@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 
 enum LayerKind: String, Codable, CaseIterable, Identifiable, Sendable {

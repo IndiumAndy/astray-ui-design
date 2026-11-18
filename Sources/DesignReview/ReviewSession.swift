@@ -32,32 +32,6 @@ enum ReviewState: String, CaseIterable, Identifiable {
     }
 }
 
-enum ReviewDevice: String, Codable, CaseIterable, Identifiable, Sendable {
-    case phone, largePhone, tablet, desktop
-
-    var id: Self { self }
-
-    var name: String {
-        switch self {
-        case .phone: "iPhone"
-        case .largePhone: "iPhone 大屏"
-        case .tablet: "iPad"
-        case .desktop: "桌面"
-        }
-    }
-
-    var size: CGSize {
-        switch self {
-        case .phone: CGSize(width: 390, height: 844)
-        case .largePhone: CGSize(width: 430, height: 932)
-        case .tablet: CGSize(width: 820, height: 1180)
-        case .desktop: CGSize(width: 1440, height: 900)
-        }
-    }
-
-    var dimensions: String { "\(Int(size.width)) × \(Int(size.height))" }
-}
-
 enum CanvasZoom: String, CaseIterable, Identifiable {
     case fit, actual, half, quarter
 
@@ -83,7 +57,7 @@ enum CanvasZoom: String, CaseIterable, Identifiable {
 }
 
 enum NavigatorTab: String, CaseIterable, Identifiable {
-    case components, layers, pages
+    case components, layers, pages, personal
 
     var id: Self { self }
     var title: String {
@@ -91,6 +65,7 @@ enum NavigatorTab: String, CaseIterable, Identifiable {
         case .components: "组件"
         case .layers: "图层"
         case .pages: "页面"
+        case .personal: "个人库"
         }
     }
 }
@@ -113,6 +88,7 @@ struct ReviewArrangement {
 final class ReviewSession {
     let design: DesignEditing?
     let run = PreviewController()
+    var allowsLocalMCP = false
     private(set) var state: ReviewState
     private var deviceSample = ReviewDevice.phone
     private var inspectorOverride: Bool?
@@ -187,8 +163,11 @@ final class ReviewSession {
     }
 
     func exportProject() {
-        guard let editor else { return }
-        run.export(editor, in: NSApp.keyWindow)
+        if let editor { run.requestExport(editor, selectedOnly: false) }
+    }
+
+    func exportSelection() {
+        if let editor { run.requestExport(editor, selectedOnly: true) }
     }
 }
 

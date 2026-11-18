@@ -6,9 +6,13 @@ final class PreviewController {
     let simulator = SimulatorPreview()
     private(set) var webBusy = false
     var issue: PreviewIssue?
+    var exportRequest: SourceExportRequest?
+    var exportReview: ExportUpdate?
+    private(set) var exportBusy = false
     private var server: PreviewServer?
     private var startingServer: Task<URL, Error>?
     private var entry: UUID?
+    @ObservationIgnored private var exportPanel: NSSavePanel?
 
     func publish(_ project: DesignProject) {
         guard let server else { return }
@@ -43,20 +47,60 @@ final class PreviewController {
         publish(editor.project)
     }
 
-    func export(_ editor: DesignEditing, in window: NSWindow?) {
-        let panel = NSSavePanel()
-        panel.nameFieldStringValue = "设计源码"
-        panel.prompt = "导出"
-        let design = editor.project.runtime()
-        let complete: (NSApplication.ModalResponse) -> Void = { [weak self, weak panel] response in
-            guard response == .OK, let url = panel?.url else { return }
-            Task.detached { [weak self] in
-                do { try ProjectExport.write(design, to: url) }
-                catch { await self?.report(error) }
-            }
+    func requestExport(_ editor: DesignEditing, selectedOnly: Bool) {
+        let selected = editor.selectedBoards.isEmpty ? [editor.page.id] : editor.selectedBoards
+        exportRequest = SourceExportRequest(selectedOnly: selectedOnly, pageIDs: selected)
+    }
+
+    func chooseExportDirectory(_ target: SourceExportTarget) {
+        guard exportPanel == nil else { return }
+        let panel: NSSavePanel
+        if target.updating {
+            let picker = NSOpenPanel()
+            picker.canChooseDirectories = true
+            picker.canChooseFiles = false
+            picker.allowsMultipleSelection = false
+            picker.prompt = "查看差异"
+            panel = picker
+        } else {
+            let picker = NSSavePanel()
+            picker.nameFieldStringValue = "设计源码"
+            picker.prompt = "导出"
+            panel = picker
         }
-        if let window { panel.beginSheetModal(for: window, completionHandler: complete) }
-        else { panel.begin(completionHandler: complete) }
+        exportPanel = panel
+        panel.begin { [weak self] response in
+            guard let self else { return }
+            let url = self.exportPanel?.url
+            self.exportPanel = nil
+            guard response == .OK, let url else { return }
+            self.startExport(target, to: url)
+        }
+    }
+
+    private func startExport(_ target: SourceExportTarget, to url: URL) {
+        exportBusy = true
+        Task { @MainActor in
+            defer { exportBusy = false }
+            do {
+                let plan = try await Task.detached { () throws -> ExportUpdate? in
+                    if target.updating { return try ProjectExport.prepareUpdate(target.export, to: url) }
+                    try ProjectExport.write(target.export, to: url)
+                    return nil
+                }.value
+                exportReview = plan
+            } catch { report(error) }
+        }
+    }
+
+    func applyExport(_ update: ExportUpdate, choices: Set<String>) {
+        exportBusy = true
+        Task { @MainActor in
+            defer { exportBusy = false }
+            do {
+                try await Task.detached { try update.apply(replacingConflicts: choices) }.value
+            } catch { report(error) }
+        }
     }
 
     private func report(_ error: Error) { issue = PreviewIssue(text: error.localizedDescription) }
